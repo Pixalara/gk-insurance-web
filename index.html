@@ -4,179 +4,200 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GK Insurance | Coming Soon</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* RESET & SETUP */
+        /* RESET */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             font-family: 'Montserrat', sans-serif;
             background-color: #ffffff;
-            color: #1a1a1a;
+            color: #0f172a;
             height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow-x: hidden;
+            overflow: hidden; /* No scrollbars */
         }
 
-        /* NAVIGATION / LOGO */
+        /* HEADER */
         header {
-            padding: 30px 5%;
+            padding: 40px 6%;
             display: flex;
-            justify-content: space-between;
             align-items: center;
         }
 
         .logo {
             font-weight: 900;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             letter-spacing: -1px;
-            color: #004aad; /* Professional Royal Blue */
+            color: #004aad; /* Royal Blue */
+            text-transform: uppercase;
         }
 
-        .contact-pill {
-            background-color: #f0f0f0;
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            text-decoration: none;
-            color: #333;
-            transition: 0.3s;
-        }
-
-        .contact-pill:hover {
-            background-color: #004aad;
-            color: #fff;
-        }
-
-        /* MAIN CONTENT AREA */
+        /* HERO SECTION */
         .hero {
             flex: 1;
             display: flex;
-            align-items: center;
+            flex-direction: column;
             justify-content: center;
+            padding: 0 6%;
             position: relative;
-            padding: 0 5%;
-        }
-
-        .content-wrapper {
-            width: 100%;
-            max-width: 1400px;
-            position: relative;
-            z-index: 2;
         }
 
         /* THE MASSIVE TEXT */
         h1 {
-            font-size: 11vw; /* Responsive huge size */
-            line-height: 0.9;
+            font-size: 13vw; /* Very Large */
+            line-height: 0.85;
             font-weight: 900;
             text-transform: uppercase;
-            color: #111;
-            margin-bottom: 20px;
-            letter-spacing: -4px;
+            color: #0f172a;
+            margin-bottom: 30px;
+            letter-spacing: -0.04em;
+            animation: slideUp 1s ease-out;
         }
 
         h1 span {
             color: #004aad;
-            display: block; /* Puts 'SOON' on next line */
+            display: block;
         }
 
-        /* SUBTEXT & SERVICES */
-        .sub-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
+        /* SUB-CONTENT WRAPPER */
+        .content-footer {
             margin-top: 40px;
-            border-top: 4px solid #111;
-            padding-top: 30px;
-            flex-wrap: wrap;
-            gap: 30px;
+            max-width: 1200px;
+            animation: fadeIn 1.5s ease-out;
         }
 
-        .description {
-            max-width: 500px;
+        p.description {
             font-size: 1.2rem;
-            line-height: 1.5;
+            color: #64748b;
+            margin-bottom: 30px;
+            max-width: 600px;
             font-weight: 500;
-            color: #555;
+            line-height: 1.6;
         }
 
-        .services-list {
+        /* NEW PRODUCT TAGS DESIGN */
+        .products-container {
             display: flex;
+            flex-wrap: wrap;
             gap: 15px;
         }
 
-        .badge {
-            border: 2px solid #111;
-            padding: 8px 16px;
+        .product-pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 28px;
+            background-color: #f1f5f9; /* Light Grey Blue */
+            color: #334155;
+            border-radius: 50px; /* Capsule shape */
             font-weight: 700;
+            font-size: 0.95rem;
             text-transform: uppercase;
-            font-size: 0.85rem;
-            background: white;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            cursor: default;
+            border: 1px solid transparent;
         }
 
-        /* BACKGROUND DECORATION */
-        .bg-shape {
+        .product-pill i {
+            color: #004aad;
+            font-size: 1.1rem;
+        }
+
+        /* Hover Effect */
+        .product-pill:hover {
+            background-color: #004aad;
+            color: #ffffff;
+            transform: translateY(-5px); /* Float Up */
+            box-shadow: 0 10px 20px rgba(0, 74, 173, 0.2);
+        }
+
+        .product-pill:hover i {
+            color: #ffffff;
+        }
+
+        /* ANIMATIONS */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* BACKGROUND ELEMENT */
+        .bg-element {
             position: absolute;
-            right: -10%;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 50vh;
-            height: 50vh;
-            background: linear-gradient(45deg, #004aad, #007bff);
-            border-radius: 50%;
-            opacity: 0.05;
-            z-index: 1;
-            filter: blur(80px);
+            right: -5%;
+            bottom: -10%;
+            font-size: 40vw;
+            color: #f8fafc;
+            z-index: -1;
+            font-weight: 900;
+            line-height: 1;
+            user-select: none;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            h1 { font-size: 16vw; }
+            .products-container { gap: 10px; }
+            .product-pill { padding: 12px 20px; font-size: 0.8rem; }
+            header { padding: 30px 20px; }
+            .hero { padding: 0 20px; }
         }
 
         /* FOOTER */
         footer {
-            padding: 20px 5%;
-            font-size: 0.8rem;
-            color: #888;
-            border-top: 1px solid #eaeaea;
+            position: absolute;
+            bottom: 20px;
+            left: 6%;
+            font-size: 0.75rem;
+            color: #94a3b8;
         }
 
-        /* RESPONSIVE ADJUSTMENTS */
-        @media (max-width: 768px) {
-            h1 { font-size: 15vw; letter-spacing: -2px; }
-            .sub-content { flex-direction: column; align-items: flex-start; }
-            .services-list { flex-wrap: wrap; }
-            .bg-shape { display: none; }
-        }
     </style>
 </head>
 <body>
 
+    <div class="bg-element">GK</div>
+
     <header>
-        <div class="logo">GK INSURANCE</div>
-        <a href="tel:+919876543210" class="contact-pill">📞 Call Us</a>
+        <div class="logo">GK Insurance</div>
     </header>
 
     <section class="hero">
-        <div class="bg-shape"></div>
-        
-        <div class="content-wrapper">
-            <h1>
-                Launching <br>
-                <span>Very Soon.</span>
-            </h1>
+        <h1>
+            Launching <br>
+            <span>Very Soon.</span>
+        </h1>
 
-            <div class="sub-content">
-                <div class="description">
-                    We are building a new standard for General Insurance. 
-                    Simple, transparent, and built for your needs.
+        <div class="content-footer">
+            <p class="description">
+                We are crafting a premium digital experience to help you secure your assets. 
+                Reliable general insurance solutions are just around the corner.
+            </p>
+
+            <div class="products-container">
+                <div class="product-pill">
+                    <i class="fa-solid fa-car"></i> Motor
                 </div>
-
-                <div class="services-list">
-                    <div class="badge">Motor</div>
-                    <div class="badge">Health</div>
-                    <div class="badge">Travel</div>
-                    <div class="badge">Home</div>
+                <div class="product-pill">
+                    <i class="fa-solid fa-heart-pulse"></i> Health
+                </div>
+                <div class="product-pill">
+                    <i class="fa-solid fa-house-chimney"></i> Home
+                </div>
+                <div class="product-pill">
+                    <i class="fa-solid fa-plane-departure"></i> Travel
+                </div>
+                <div class="product-pill">
+                    <i class="fa-solid fa-briefcase"></i> Business
                 </div>
             </div>
         </div>
@@ -184,7 +205,7 @@
 
     <footer>
         &copy; 2026 GK Insurance. All rights reserved. <br>
-        <span style="font-size: 0.7em;">Insurance is the subject matter of solicitation.</span>
+        Insurance is the subject matter of solicitation.
     </footer>
 
 </body>
