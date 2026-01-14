@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GK Insurance | Coming Soon</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -15,17 +15,17 @@
             font-family: 'Montserrat', sans-serif;
             background-color: #ffffff;
             color: #0f172a;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow: hidden; /* No scrollbars */
+            overflow-x: hidden; 
+            overflow-y: auto; /* Ensures scrolling on smaller screens */
         }
 
         /* HEADER */
         header {
             padding: 40px 6%;
-            display: flex;
-            align-items: center;
+            flex-shrink: 0;
         }
 
         .logo {
@@ -42,18 +42,18 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 0 6%;
+            padding: 40px 6%;
             position: relative;
         }
 
         /* THE MASSIVE TEXT */
         h1 {
-            font-size: 13vw; /* Very Large */
+            font-size: 12vw;
             line-height: 0.85;
             font-weight: 900;
             text-transform: uppercase;
             color: #0f172a;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
             letter-spacing: -0.04em;
             animation: slideUp 1s ease-out;
         }
@@ -65,9 +65,9 @@
 
         /* SUB-CONTENT WRAPPER */
         .content-footer {
-            margin-top: 40px;
             max-width: 1200px;
             animation: fadeIn 1.5s ease-out;
+            margin-bottom: 20px;
         }
 
         p.description {
@@ -79,7 +79,7 @@
             line-height: 1.6;
         }
 
-        /* NEW PRODUCT TAGS DESIGN */
+        /* PRODUCT TAGS DESIGN */
         .products-container {
             display: flex;
             flex-wrap: wrap;
@@ -91,9 +91,9 @@
             align-items: center;
             gap: 10px;
             padding: 14px 28px;
-            background-color: #f1f5f9; /* Light Grey Blue */
+            background-color: #f1f5f9; 
             color: #334155;
-            border-radius: 50px; /* Capsule shape */
+            border-radius: 50px; 
             font-weight: 700;
             font-size: 0.95rem;
             text-transform: uppercase;
@@ -112,7 +112,7 @@
         .product-pill:hover {
             background-color: #004aad;
             color: #ffffff;
-            transform: translateY(-5px); /* Float Up */
+            transform: translateY(-5px); 
             box-shadow: 0 10px 20px rgba(0, 74, 173, 0.2);
         }
 
@@ -134,7 +134,7 @@
         .bg-element {
             position: absolute;
             right: -5%;
-            bottom: -10%;
+            bottom: 10%;
             font-size: 40vw;
             color: #f8fafc;
             z-index: -1;
@@ -143,22 +143,56 @@
             user-select: none;
         }
 
-        /* RESPONSIVE */
+        /* FOOTER */
+        footer {
+            padding: 30px 6%;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-top: auto;
+            background: white;
+            flex-shrink: 0;
+            border-top: 1px solid #f1f5f9; /* Subtle divider line */
+            display: flex;
+            justify-content: space-between; /* Spreads content left and right */
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-left p {
+            margin-bottom: 5px;
+        }
+
+        /* Powered By Link Styling */
+        .powered-by {
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        .powered-by a {
+            color: #004aad;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .powered-by a:hover {
+            color: #0f172a;
+            text-decoration: underline;
+        }
+
+        /* Responsive Footer */
         @media (max-width: 768px) {
-            h1 { font-size: 16vw; }
+            h1 { font-size: 15vw; }
             .products-container { gap: 10px; }
             .product-pill { padding: 12px 20px; font-size: 0.8rem; }
             header { padding: 30px 20px; }
-            .hero { padding: 0 20px; }
-        }
-
-        /* FOOTER */
-        footer {
-            position: absolute;
-            bottom: 20px;
-            left: 6%;
-            font-size: 0.75rem;
-            color: #94a3b8;
+            .hero { padding: 40px 20px; }
+            
+            footer { 
+                padding: 30px 20px; 
+                flex-direction: column; 
+                align-items: flex-start; 
+            }
         }
 
     </style>
@@ -204,8 +238,14 @@
     </section>
 
     <footer>
-        &copy; 2026 GK Insurance. All rights reserved. <br>
-        Insurance is the subject matter of solicitation.
+        <div class="footer-left">
+            <p>&copy; 2026 GK Insurance. All rights reserved.</p>
+            <p>Insurance is the subject matter of solicitation.</p>
+        </div>
+        
+        <div class="footer-right">
+            <span class="powered-by">Powered by <a href="https://pixalara.com" target="_blank">Pixalara.com</a></span>
+        </div>
     </footer>
 
 </body>
