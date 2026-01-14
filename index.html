@@ -19,7 +19,7 @@
             display: flex;
             flex-direction: column;
             overflow-x: hidden; 
-            overflow-y: auto; /* Ensures scrolling on smaller screens */
+            overflow-y: auto;
         }
 
         /* HEADER */
@@ -42,7 +42,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 40px 6%;
+            padding: 20px 6%; /* Reduced top padding slightly */
             position: relative;
         }
 
@@ -53,7 +53,7 @@
             font-weight: 900;
             text-transform: uppercase;
             color: #0f172a;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             letter-spacing: -0.04em;
             animation: slideUp 1s ease-out;
         }
@@ -151,9 +151,9 @@
             margin-top: auto;
             background: white;
             flex-shrink: 0;
-            border-top: 1px solid #f1f5f9; /* Subtle divider line */
+            border-top: 1px solid #f1f5f9;
             display: flex;
-            justify-content: space-between; /* Spreads content left and right */
+            justify-content: space-between;
             align-items: flex-end;
             flex-wrap: wrap;
             gap: 20px;
@@ -180,21 +180,60 @@
             text-decoration: underline;
         }
 
-        /* Responsive Footer */
+        /* --- MOBILE OPTIMIZATION --- */
         @media (max-width: 768px) {
-            h1 { font-size: 15vw; }
-            .products-container { gap: 10px; }
-            .product-pill { padding: 12px 20px; font-size: 0.8rem; }
-            header { padding: 30px 20px; }
-            .hero { padding: 40px 20px; }
+            /* Adjust header padding */
+            header { 
+                padding: 25px 20px; 
+            }
+
+            .logo {
+                font-size: 1.5rem;
+            }
+
+            /* Adjust Hero padding and spacing */
+            .hero { 
+                padding: 20px 20px; 
+                justify-content: flex-start; /* Start content higher up on mobile */
+                padding-top: 40px;
+            }
             
+            /* Make text readable on small screens */
+            h1 { 
+                font-size: 14vw; /* Slightly larger relative size for impact */
+                margin-bottom: 20px;
+            }
+
+            p.description {
+                font-size: 1rem; /* readable body text */
+                margin-bottom: 25px;
+            }
+
+            /* Stack footer vertically */
             footer { 
-                padding: 30px 20px; 
+                padding: 25px 20px; 
                 flex-direction: column; 
                 align-items: flex-start; 
+                gap: 15px;
+            }
+
+            /* Adjust pills for small screens */
+            .products-container { 
+                gap: 10px; 
+            }
+            
+            .product-pill { 
+                padding: 10px 20px; 
+                font-size: 0.8rem; 
+                flex: 1 1 auto; /* Allow pills to grow/shrink nicely */
+                justify-content: center;
+            }
+            
+            /* Hide the giant background letters on mobile to prevent clutter */
+            .bg-element {
+                display: none;
             }
         }
-
     </style>
 </head>
 <body>
@@ -244,7 +283,7 @@
         </div>
         
         <div class="footer-right">
-            <span class="powered-by">Powered by <a href="https://pixalara.com" target="_blank">Pixalara.com</a></span>
+            <span class="powered-by">Powered by <a href="https://pixalara.com" target="_blank">pixalara.com</a></span>
         </div>
     </footer>
 
