@@ -43,15 +43,15 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                     'Accept': 'application/json',
                 },
                 body: JSON.stringify({
-                    access_key: process.env.NEXT_PUBLIC_WEB3FORMS_KEY || 'YOUR_WEB3FORMS_ACCESS_KEY_HERE',
+                    access_key: process.env.NEXT_PUBLIC_WEB3FORMS_KEY,
                     subject: `New Insurance Quote Request - ${formData.insurance_type}`,
                     from_name: 'GK Insurance Website',
                     name: formData.name,
                     phone: formData.phone,
-                    email: formData.email || 'Not provided',
+                    email: formData.email,
                     insurance_type: formData.insurance_type,
-                    vehicle_number: formData.vehicle_number || 'N/A',
-                    message: formData.message || 'No additional message',
+                    vehicle_number: formData.vehicle_number,
+                    message: formData.message,
                 }),
             });
 
@@ -66,7 +66,7 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                         phone: '',
                         email: '',
                         insurance_type: '',
-                        vehicle_number: '',
+                        vehicle_number: '', 
                         message: '',
                     });
                     if (onClose) onClose();
