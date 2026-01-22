@@ -64,7 +64,8 @@ body{
 /* SMOOTH SCROLLING */
 html {
   scroll-behavior: smooth;
-  transition: all 3ms ease-in-out;
+  -ms-scroll-limit-x-max: true;
+  transition: all 300ms ease-in-out;
 }
 
 /* CUSTOM SCROLLBAR */

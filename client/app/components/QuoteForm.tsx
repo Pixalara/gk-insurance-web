@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, FormEvent } from 'react';
+import { saveLead } from '@/app/utils/storage';
 
 interface QuoteFormProps {
     productType?: string;
@@ -58,6 +59,22 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
             const data = await response.json();
 
             if (data.success) {
+                // Save to localStorage for admin access
+                try {
+                    saveLead({
+                        name: formData.name,
+                        phone: formData.phone,
+                        email: formData.email || undefined,
+                        insurance_type: formData.insurance_type,
+                        vehicle_number: formData.vehicle_number || undefined,
+                        message: formData.message || undefined,
+                        status: 'new',
+                        source: 'website',
+                    });
+                } catch (error) {
+                    console.error('Error saving lead to localStorage:', error);
+                }
+
                 setSubmitted(true);
                 // Reset form after 3 seconds
                 setTimeout(() => {
@@ -66,7 +83,7 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                         phone: '',
                         email: '',
                         insurance_type: '',
-                        vehicle_number: '', 
+                        vehicle_number: '',
                         message: '',
                     });
                     if (onClose) onClose();
@@ -89,8 +106,26 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                     <i className="fas fa-check text-green-600 text-3xl"></i>
                 </div>
                 <h3 className="text-2xl font-bold text-slate-900 mb-2">Thank You!</h3>
-                <p className="text-slate-600 mb-4">Your quote request has been received successfully.</p>
-                <p className="text-sm text-slate-500">We'll contact you shortly with the best insurance quotes.</p>
+                <p className="text-slate-600 mb-4">Your quote request has been received.</p>
+                <div className="flex flex-col gap-3 justify-center">
+                    <p className="text-sm text-slate-500">We'll contact you shortly. For faster response:</p>
+                    <button
+                        onClick={() => {
+                            const msg = encodeURIComponent(`Hi, I just submitted a quote request for ${formData.insurance_type}. My name is ${formData.name}.`);
+                            window.open(`https://wa.me/919573322990?text=${msg}`, '_blank');
+                        }}
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600 transition-colors mx-auto"
+                    >
+                        <i className="fab fa-whatsapp text-xl"></i>
+                        Send via WhatsApp
+                    </button>
+                    <button
+                        onClick={onClose}
+                        className="text-sm text-slate-400 hover:text-slate-600 mt-2 hover:underline"
+                    >
+                        Close
+                    </button>
+                </div>
             </div>
         );
     }
