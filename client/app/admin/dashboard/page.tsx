@@ -223,7 +223,7 @@ export default function DashboardPage() {
                                 return (
                                     <div key={idx}>
                                         <div className="flex justify-between text-sm mb-1">
-                                            <span className="font-semibold text-slate-700 overflow-hidden text-ellipsis whitespace-nowrap max-w-[150px]">{company.name}</span>
+                                            <span className="font-semibold text-slate-700 overflow-hidden text-ellipsis whitespace-nowrap max-w-37.5">{company.name}</span>
                                             <span className="text-slate-500">{company.count}</span>
                                         </div>
                                         <div className="w-full bg-slate-100 rounded-full h-2">
