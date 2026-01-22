@@ -79,9 +79,9 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 {/* Sidebar */}
                 <aside
                     className={`
-            fixed md:sticky top-[73px] left-0 z-40
+            fixed top-[73px] left-0 z-40
             w-64 bg-white border-r border-slate-200 
-            min-h-[calc(100vh-73px)] 
+            h-[calc(100vh-73px)] overflow-y-auto
             transform transition-transform duration-300 ease-in-out
             ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
           `}
@@ -132,7 +132,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 </aside>
 
                 {/* Main Content */}
-                <main className="flex-1 p-4 md:p-6 lg:p-8 w-full md:w-auto">
+                <main className="flex-1 p-4 md:p-6 lg:p-8 w-full md:ml-64">
                     {children}
                 </main>
             </div>

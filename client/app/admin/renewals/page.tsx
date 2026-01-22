@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Policy } from '@/app/types';
+import { Policy, Customer, InsuranceCompany } from '@/app/types';
+import { getPolicies, getCustomers, getCompanies, initializePolicies } from '@/app/utils/storage';
 
-interface PolicyWithCustomer extends Policy {
+interface PolicyWithDetails extends Policy {
     customer_name: string;
     company_name: string;
     product_name: string;
@@ -11,89 +12,55 @@ interface PolicyWithCustomer extends Policy {
 }
 
 export default function RenewalsPage() {
-    const [policies, setPolicies] = useState<PolicyWithCustomer[]>([]);
+    const [policies, setPolicies] = useState<PolicyWithDetails[]>([]);
     const [loading, setLoading] = useState(true);
     const [filterRange, setFilterRange] = useState<'expired' | 'week' | 'month' | 'twomonths'>('week');
 
     useEffect(() => {
-        // TODO: Fetch from API
-        const today = new Date();
-        const mockPolicies: PolicyWithCustomer[] = [
-            {
-                id: '1',
-                customer_id: '1',
-                customer_name: 'Rajesh Kumar',
-                insurance_company_id: '1',
-                company_name: 'ICICI Lombard',
-                product_type_id: '1',
-                product_name: 'Car Insurance',
-                policy_number: 'POL-2024-001',
-                policy_start_date: new Date(2024, 0, 15).toISOString(),
-                policy_end_date: new Date(today.getTime() + 5 * 24 * 60 * 60 * 1000).toISOString(),
-                premium_amount: 25000,
-                status: 'active',
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-                days_remaining: 5,
-            },
-            {
-                id: '2',
-                customer_id: '2',
-                customer_name: 'Priya Sharma',
-                insurance_company_id: '2',
-                company_name: 'Star Health',
-                product_type_id: '2',
-                product_name: 'Health Insurance',
-                policy_number: 'POL-2024-002',
-                policy_start_date: new Date(2024, 1, 10).toISOString(),
-                policy_end_date: new Date(today.getTime() + 15 * 24 * 60 * 60 * 1000).toISOString(),
-                premium_amount: 18000,
-                status: 'active',
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-                days_remaining: 15,
-            },
-            {
-                id: '3',
-                customer_id: '3',
-                customer_name: 'Amit Patel',
-                insurance_company_id: '3',
-                company_name: 'Bajaj General',
-                product_type_id: '3',
-                product_name: 'Two-Wheeler Insurance',
-                policy_number: 'POL-2024-003',
-                policy_start_date: new Date(2024, 2, 5).toISOString(),
-                policy_end_date: new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-                premium_amount: 3500,
-                status: 'expired',
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-                days_remaining: -3,
-            },
-            {
-                id: '4',
-                customer_id: '4',
-                customer_name: 'Sneha Reddy',
-                insurance_company_id: '4',
-                company_name: 'LIC',
-                product_type_id: '4',
-                product_name: 'Life Insurance',
-                policy_number: 'POL-2024-004',
-                policy_start_date: new Date(2023, 5, 20).toISOString(),
-                policy_end_date: new Date(today.getTime() + 45 * 24 * 60 * 60 * 1000).toISOString(),
-                premium_amount: 50000,
-                status: 'active',
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-                days_remaining: 45,
-            },
-        ];
-
-        setTimeout(() => {
-            setPolicies(mockPolicies);
-            setLoading(false);
-        }, 500);
+        loadData();
     }, []);
+
+    const loadData = () => {
+        initializePolicies(); // Ensure data exists
+
+        const storedPolicies = getPolicies();
+        const storedCustomers = getCustomers();
+        const storedCompanies = getCompanies();
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Normalize today to start of day
+
+        const enrichedPolicies: PolicyWithDetails[] = storedPolicies.map(policy => {
+            const customer = storedCustomers.find(c => c.id === policy.customer_id);
+            const company = storedCompanies.find(c => c.id === policy.insurance_company_id);
+            const endDate = new Date(policy.policy_end_date);
+            const diffTime = endDate.getTime() - today.getTime();
+            const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            // Map product type id to readable name
+            const productNames: Record<string, string> = {
+                'car': 'Car Insurance',
+                'two-wheeler': 'Two-Wheeler',
+                'health': 'Health Insurance',
+                'life': 'Life Insurance',
+                'commercial': 'Commercial Vehicle'
+            };
+
+            return {
+                ...policy,
+                customer_name: customer?.name || 'Unknown Customer',
+                company_name: company?.name || 'Unknown Company',
+                product_name: productNames[policy.product_type_id] || policy.product_type_id,
+                days_remaining: daysRemaining
+            };
+        });
+
+        // Sort by days remaining (ascending)
+        enrichedPolicies.sort((a, b) => a.days_remaining - b.days_remaining);
+
+        setPolicies(enrichedPolicies);
+        setLoading(false);
+    };
 
     const getFilteredPolicies = () => {
         switch (filterRange) {
@@ -231,7 +198,7 @@ export default function RenewalsPage() {
                                 <th className="px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
                                     End Date
                                 </th>
-                                <th className="px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
+                                <th className="px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider ">
                                     Status
                                 </th>
                                 <th className="px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
@@ -262,8 +229,8 @@ export default function RenewalsPage() {
                                             {new Date(policy.policy_end_date).toLocaleDateString('en-IN')}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4">
-                                        <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getUrgencyColor(policy.days_remaining)}`}>
+                                    <td className="px-6 py-4 ">
+                                        <span className={`px-3 py-1 rounded-md text-xs font-semibold border ${getUrgencyColor(policy.days_remaining)}`}>
                                             {policy.days_remaining < 0
                                                 ? `Expired ${Math.abs(policy.days_remaining)}d ago`
                                                 : `${policy.days_remaining} days left`}

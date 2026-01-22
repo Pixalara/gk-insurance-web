@@ -2,70 +2,27 @@
 
 import { useState, useEffect } from 'react';
 import { Lead } from '@/app/types';
+import { getLeads, updateLead, deleteLead } from '@/app/utils/storage';
 
 export default function LeadsPage() {
     const [leads, setLeads] = useState<Lead[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState<string>('all');
+    const [editingLead, setEditingLead] = useState<Lead | null>(null);
+    const [showEditModal, setShowEditModal] = useState(false);
+
+    const loadLeads = () => {
+        const storedLeads = getLeads();
+        setLeads(storedLeads);
+        setLoading(false);
+    };
 
     useEffect(() => {
-        // TODO: Fetch from API
-        const mockLeads: Lead[] = [
-            {
-                id: '1',
-                name: 'Rajesh Kumar',
-                phone: '9876543210',
-                email: 'rajesh@example.com',
-                insurance_type: 'Car Insurance',
-                vehicle_number: 'AP 01 AB 1234',
-                message: 'Need comprehensive coverage',
-                status: 'new',
-                source: 'website',
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-            },
-            {
-                id: '2',
-                name: 'Priya Sharma',
-                phone: '9876543211',
-                email: 'priya@example.com',
-                insurance_type: 'Health Insurance',
-                message: 'Looking for family floater plan',
-                status: 'contacted',
-                source: 'website',
-                created_at: new Date(Date.now() - 86400000).toISOString(),
-                updated_at: new Date(Date.now() - 86400000).toISOString(),
-            },
-            {
-                id: '3',
-                name: 'Amit Patel',
-                phone: '9876543212',
-                insurance_type: 'Two-Wheeler Insurance',
-                vehicle_number: 'AP 05 XY 5678',
-                status: 'converted',
-                source: 'website',
-                created_at: new Date(Date.now() - 172800000).toISOString(),
-                updated_at: new Date(Date.now() - 172800000).toISOString(),
-            },
-            {
-                id: '4',
-                name: 'Sneha Reddy',
-                phone: '9876543213',
-                email: 'sneha@example.com',
-                insurance_type: 'Life Insurance',
-                message: 'Term insurance for 1 crore',
-                status: 'new',
-                source: 'website',
-                created_at: new Date(Date.now() - 3600000).toISOString(),
-                updated_at: new Date(Date.now() - 3600000).toISOString(),
-            },
-        ];
-
+        // Load leads from localStorage
         setTimeout(() => {
-            setLeads(mockLeads);
-            setLoading(false);
-        }, 500);
+            loadLeads();
+        }, 300);
     }, []);
 
     const filteredLeads = leads.filter((lead) => {
@@ -87,15 +44,49 @@ export default function LeadsPage() {
     };
 
     const handleStatusChange = (leadId: string, newStatus: string) => {
-        setLeads(leads.map(lead =>
-            lead.id === leadId ? { ...lead, status: newStatus as Lead['status'] } : lead
-        ));
+        const success = updateLead(leadId, { status: newStatus as Lead['status'] });
+        if (success) {
+            loadLeads();
+        }
     };
 
     const handleDelete = (leadId: string) => {
         if (confirm('Are you sure you want to delete this lead?')) {
-            setLeads(leads.filter(lead => lead.id !== leadId));
+            const success = deleteLead(leadId);
+            if (success) {
+                loadLeads();
+            }
         }
+    };
+
+    const handleEdit = (lead: Lead) => {
+        setEditingLead({ ...lead });
+        setShowEditModal(true);
+    };
+
+    const handleSaveEdit = () => {
+        if (!editingLead) return;
+
+        const success = updateLead(editingLead.id, {
+            name: editingLead.name,
+            phone: editingLead.phone,
+            email: editingLead.email,
+            insurance_type: editingLead.insurance_type,
+            vehicle_number: editingLead.vehicle_number,
+            message: editingLead.message,
+            status: editingLead.status,
+        });
+
+        if (success) {
+            loadLeads();
+            setShowEditModal(false);
+            setEditingLead(null);
+        }
+    };
+
+    const handleCancelEdit = () => {
+        setShowEditModal(false);
+        setEditingLead(null);
     };
 
     const getTimeAgo = (date: string) => {
@@ -283,6 +274,13 @@ export default function LeadsPage() {
                                                 </a>
                                             )}
                                             <button
+                                                onClick={() => handleEdit(lead)}
+                                                className="p-2 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors"
+                                                title="Edit"
+                                            >
+                                                <i className="fas fa-edit"></i>
+                                            </button>
+                                            <button
                                                 onClick={() => handleDelete(lead.id)}
                                                 className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                                 title="Delete"
@@ -304,6 +302,139 @@ export default function LeadsPage() {
                     </div>
                 )}
             </div>
+
+            {/* Edit Modal */}
+            {showEditModal && editingLead && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                        <div className="p-6 border-b border-slate-200">
+                            <h2 className="text-2xl font-black text-slate-900">Edit Lead</h2>
+                        </div>
+
+                        <div className="p-6 space-y-4">
+                            {/* Name */}
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                    Name <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    value={editingLead.name}
+                                    onChange={(e) => setEditingLead({ ...editingLead, name: e.target.value })}
+                                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent"
+                                />
+                            </div>
+
+                            {/* Phone */}
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                    Phone <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="tel"
+                                    value={editingLead.phone}
+                                    onChange={(e) => setEditingLead({ ...editingLead, phone: e.target.value })}
+                                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent"
+                                />
+                            </div>
+
+                            {/* Email */}
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                    Email
+                                </label>
+                                <input
+                                    type="email"
+                                    value={editingLead.email || ''}
+                                    onChange={(e) => setEditingLead({ ...editingLead, email: e.target.value })}
+                                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent"
+                                />
+                            </div>
+
+                            {/* Insurance Type */}
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                    Insurance Type <span className="text-red-500">*</span>
+                                </label>
+                                <select
+                                    value={editingLead.insurance_type}
+                                    onChange={(e) => setEditingLead({ ...editingLead, insurance_type: e.target.value })}
+                                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent"
+                                >
+                                    <option value="Two-Wheeler Insurance">Two-Wheeler Insurance</option>
+                                    <option value="Car Insurance">Car Insurance</option>
+                                    <option value="Commercial Vehicle Insurance">Commercial Vehicle Insurance</option>
+                                    <option value="Travel Insurance">Travel Insurance</option>
+                                    <option value="Shopkeeper Insurance">Shopkeeper Insurance</option>
+                                    <option value="Commercial Business Insurance">Commercial Business Insurance</option>
+                                    <option value="Health Insurance">Health Insurance</option>
+                                    <option value="Life Insurance">Life Insurance</option>
+                                </select>
+                            </div>
+
+                            {/* Vehicle Number */}
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                    Vehicle Number
+                                </label>
+                                <input
+                                    type="text"
+                                    value={editingLead.vehicle_number || ''}
+                                    onChange={(e) => setEditingLead({ ...editingLead, vehicle_number: e.target.value })}
+                                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent"
+                                    placeholder="e.g., AP 01 AB 1234"
+                                />
+                            </div>
+
+                            {/* Message */}
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                    Message
+                                </label>
+                                <textarea
+                                    value={editingLead.message || ''}
+                                    onChange={(e) => setEditingLead({ ...editingLead, message: e.target.value })}
+                                    rows={3}
+                                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent resize-none"
+                                    placeholder="Any notes or requirements..."
+                                />
+                            </div>
+
+                            {/* Status */}
+                            <div>
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                                    Status <span className="text-red-500">*</span>
+                                </label>
+                                <select
+                                    value={editingLead.status}
+                                    onChange={(e) => setEditingLead({ ...editingLead, status: e.target.value as Lead['status'] })}
+                                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent"
+                                >
+                                    <option value="new">New</option>
+                                    <option value="contacted">Contacted</option>
+                                    <option value="converted">Converted</option>
+                                    <option value="lost">Lost</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="p-6 border-t border-slate-200 flex gap-3 justify-end">
+                            <button
+                                onClick={handleCancelEdit}
+                                className="px-6 py-3 border border-slate-300 text-slate-700 font-semibold rounded-lg hover:bg-slate-50 transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleSaveEdit}
+                                className="px-6 py-3 bg-[#004aad] text-white font-semibold rounded-lg hover:bg-[#003580] transition-colors"
+                            >
+                                Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
