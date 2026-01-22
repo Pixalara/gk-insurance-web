@@ -1,99 +1,300 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useState } from "react";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import WhatsAppButton from "./components/WhatsAppButton";
+import QuoteForm from "./components/QuoteForm";
+
+const insuranceProducts = [
+  {
+    id: 'two-wheeler',
+    name: 'Two-Wheeler Insurance',
+    icon: 'fa-motorcycle',
+    description: 'Comprehensive coverage for your bike with affordable premiums',
+    features: ['Third-party coverage', 'Own damage', 'Personal accident'],
+  },
+  {
+    id: 'car',
+    name: 'Car Insurance',
+    icon: 'fa-car',
+    description: 'Complete protection for your car against all risks',
+    features: ['Comprehensive coverage', 'Zero depreciation', '24/7 roadside assistance'],
+  },
+  {
+    id: 'commercial-vehicle',
+    name: 'Commercial Vehicle',
+    icon: 'fa-truck',
+    description: 'Tailored insurance for commercial vehicles',
+    features: ['Goods in transit', 'Driver coverage', 'Liability protection'],
+  },
+  {
+    id: 'travel',
+    name: 'Travel Insurance',
+    icon: 'fa-plane-departure',
+    description: 'Travel worry-free with comprehensive coverage',
+    features: ['Medical emergencies', 'Trip cancellation', 'Lost baggage'],
+  },
+  {
+    id: 'shopkeeper',
+    name: 'Shopkeeper Insurance',
+    icon: 'fa-store',
+    description: 'Protect your business premises and inventory',
+    features: ['Fire coverage', 'Theft protection', 'Public liability'],
+  },
+  {
+    id: 'business',
+    name: 'Business Insurance',
+    icon: 'fa-briefcase',
+    description: 'Comprehensive coverage for your business operations',
+    features: ['Property damage', 'Business interruption', 'Liability coverage'],
+  },
+  {
+    id: 'health',
+    name: 'Health Insurance',
+    icon: 'fa-heart-pulse',
+    description: 'Quality healthcare coverage for you and your family',
+    features: ['Cashless hospitalization', 'Pre & post hospitalization', 'Day care procedures'],
+  },
+  {
+    id: 'life',
+    name: 'Life Insurance',
+    icon: 'fa-hand-holding-heart',
+    description: 'Secure your family\'s future with life coverage',
+    features: ['Life coverage', 'Maturity benefits', 'Tax benefits'],
+  },
+];
+
+const insurancePartners = {
+  general: [
+    { name: 'Bajaj General Insurance', logo: '/Logos/Bajaj.png' },
+    { name: 'Tata AIG', logo: '/logos/tata.png' },
+    { name: 'ICICI Lombard', logo: '/logos/icic.png' },
+    { name: 'Go Digit', logo: '/logos/Godigit.png' },
+    { name: 'Liberty General Insurance', logo: '/logos/Liberty.png' },
+  ],
+  health: [
+    { name: 'Star Health', logo: '/logos/starhealth.png' },
+    { name: 'Bajaj Health', logo: '/logos/Bajaj.png' },
+  ],
+  life: [
+    { name: 'LIC', logo: '/logos/lic.png' },
+    { name: 'Bajaj Life', logo: '/logos/bajajlife.png' },
+  ],
+};
 
 export default function HomePage() {
+  const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
+  const [showQuoteModal, setShowQuoteModal] = useState(false);
+
+  const handleGetQuote = (productName: string) => {
+    setSelectedProduct(productName);
+    setShowQuoteModal(true);
+  };
+
   return (
-    <main className="relative min-h-screen flex flex-col bg-white text-slate-900 overflow-x-hidden">
-
-      {/* Background Element */}
-      <div className="absolute right-[-5%] bottom-[10%] text-[40vw] font-black text-slate-50 -z-10 select-none hidden md:block">
-        GK
-      </div>
-
-      {/* Header */}
-      <header className="px-[6%] py-10">
-        <div className="text-[1.8rem] md:text-[1.8rem] font-black uppercase tracking-tight text-[#004aad]">
-          GK Insurance Solutions
-        </div>
-      </header>
+    <main className="relative min-h-screen bg-white text-slate-900">
+      <Navbar />
+      <WhatsAppButton />
 
       {/* Hero Section */}
-      <section className="flex-1 flex flex-col justify-center px-[6%] py-5 md:py-10">
-        <motion.h1
-          className="uppercase font-black leading-[0.85] tracking-[-0.04em] text-[14vw] md:text-[12vw] mb-8"
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        >
-          Launching <br />
-          <span className="block text-[#004aad]">Very Soon.</span>
-        </motion.h1>
+      <section className="relative overflow-hidden bg-linear-to-br from-blue-50 to-slate-50 py-20 md:py-32">
+        <div className="absolute right-[-10%] top-[10%] text-[25vw] font-black text-slate-100 -z-10 select-none hidden lg:block">
+          GK
+        </div>
 
-        {/* Content */}
-        <motion.div
-          className="max-w-[1200px]"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.2, delay: 0.3, ease: "easeOut" }}
-        >
-
-          <p className="text-slate-500 text-base md:text-xl font-medium max-w-[600px] mb-8 leading-relaxed">
-            We are crafting a premium digital experience to help you secure your assets.
-            Reliable general insurance solutions are just around the corner.
-          </p>
-
-          {/* Products */}
-          <div className="flex flex-wrap gap-3 md:gap-4">
-
-            {[
-              { label: 'Motor', iconClass: 'fa-solid fa-car' },
-              { label: 'Health', iconClass: 'fa-solid fa-heart-pulse' },
-              { label: 'Home', iconClass: 'fa-solid fa-house-chimney' },
-              { label: 'Travel', iconClass: 'fa-solid fa-plane-departure' },
-              { label: 'Business', iconClass: 'fa-solid fa-briefcase' },
-            ].map((item) => (
-              <div
-                key={item.label}
-                className="
-                  group  flex items-center gap-3 px-7 py-3 rounded-full bg-slate-100 text-slate-700
-                  font-bold text-sm uppercase tracking-wide
-                  transition-all duration-300
-                  border border-transparent
-                  cursor-default
-                  hover:bg-[#004aad]
-                  hover:text-white
-                  hover:-translate-y-[5px]
-                  hover:shadow-xl hover:shadow-[rgba(0,74,173,0.2)]
-                "
+        <div className="container-custom">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="max-w-3xl"
+          >
+            <h1 className="text-5xl md:text-7xl font-black leading-tight mb-6">
+              Compare & Get the <span className="text-[#004aad]">Best Insurance Quote</span> in Vizag
+            </h1>
+            <p className="text-xl md:text-2xl text-slate-600 font-medium mb-8">
+              20+ Years Experience | Serving 1500+ Customers Every Year
+            </p>
+            <div className="flex flex-wrap gap-4">
+              <a
+                href="#quote"
+                className="px-8 py-4 bg-[#004aad] text-white font-bold text-lg rounded-md hover:bg-[#003580] transition-all duration-300 hover:shadow-xl inline-flex items-center gap-2"
               >
-                <i className={`${item.iconClass} text-[#004aad] text-[1.1rem] transition-colors duration-300 group-hover:text-white`}></i>
-                {item.label}
+                Get Quote <i className="fas fa-arrow-right"></i>
+              </a>
+              <button
+                onClick={() => {/* WhatsApp action */ }}
+                className="px-8 py-4 bg-green-500 text-white font-bold text-lg rounded-md hover:bg-green-600 transition-all duration-300 hover:shadow-xl inline-flex items-center gap-2"
+              >
+                <i className="fab fa-whatsapp"></i> WhatsApp Now
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Partner Logos Slider */}
+      <section className="py-12 bg-white border-y border-slate-200">
+        <div className="container-custom">
+          <p className="text-center text-sm font-semibold text-slate-500 uppercase tracking-wide mb-6">
+            Trusted Insurance Partners
+          </p>
+          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
+            {[...insurancePartners.general, ...insurancePartners.health, ...insurancePartners.life]
+              .slice(0, 6)
+              .map((partner, idx) => (
+                <div
+                  key={idx}
+                  className="h-16 w-32  rounded-lg flex items-center p-3 justify-center text-slate-500 text-xs font-semibold"
+                >
+                  <img src={partner.logo} alt={partner.name} className="w-auto h-auto" />
+                </div>
+              ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Insurance Products */}
+      <section id="products" className="py-20 bg-slate-50">
+        <div className="container-custom">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-4">
+              Our Insurance Products
+            </h2>
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+              Comprehensive insurance solutions tailored to your needs
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6  ">
+            {insuranceProducts.map((product, idx) => (
+              <motion.div
+                key={product.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl border border-slate-200 hover:border-[#004aad] cursor-pointer"
+                onClick={() => handleGetQuote(product.name)}
+              >
+                <div className="w-16 h-16 bg-blue-50 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#004aad] duration-300 transition-all ease-in-out">
+                  <i className={`fas ${product.icon} text-2xl text-[#004aad] group-hover:text-white transition-colors`}></i>
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 mb-2">{product.name}</h3>
+                <p className="text-sm text-slate-600 mb-4">{product.description}</p>
+                <ul className="space-y-2 mb-4">
+                  {product.features.map((feature, i) => (
+                    <li key={i} className="text-xs text-slate-500 flex items-center gap-2">
+                      <i className="fas fa-check text-green-500"></i>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                <button className="w-full py-2 bg-slate-100 text-[#004aad] font-semibold rounded-lg group-hover:bg-[#004aad] group-hover:text-white transition-all duration-300">
+                  Get Quote
+                </button>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose Us */}
+      <section id="about" className="py-20 bg-white">
+        <div className="container-custom">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-4">
+              Why Choose GK Insurance?
+            </h2>
+            <p className="text-lg text-slate-600">
+              Your trusted insurance partner in Visakhapatnam
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              { icon: 'fa-award', title: '20+ Years', subtitle: 'Experience' },
+              { icon: 'fa-users', title: '1500+', subtitle: 'Happy Customers' },
+              { icon: 'fa-handshake', title: '10+', subtitle: 'Insurance Partners' },
+              { icon: 'fa-star', title: 'Best Rates', subtitle: 'in Vizag' },
+            ].map((item, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                className="text-center"
+              >
+                <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <i className={`fas ${item.icon} text-3xl text-[#004aad]`}></i>
+                </div>
+                <h3 className="text-3xl font-black text-slate-900 mb-1">{item.title}</h3>
+                <p className="text-slate-600 font-medium">{item.subtitle}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Quote Form Section */}
+      <section id="quote" className="py-20 bg-linear-to-br from-[#004aad] to-[#003580]">
+        <div className="container-custom">
+          <div className="max-w-2xl mx-auto bg-white rounded-3xl p-8 md:p-12 shadow-2xl">
+            <QuoteForm productType={selectedProduct || undefined} />
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" className="py-20 bg-slate-50">
+        <div className="container-custom">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-4">
+              Get in Touch
+            </h2>
+            <p className="text-lg text-slate-600">
+              Visit our office or reach out to us
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            {[
+              { icon: 'fa-map-marker-alt', title: 'Location', info: 'Visakhapatnam, AP' },
+              { icon: 'fa-phone', title: 'Phone', info: '+91 XXXXX XXXXX' },
+              { icon: 'fa-envelope', title: 'Email', info: 'info@gkinsurance.com' },
+            ].map((item, idx) => (
+              <div key={idx} className="text-center p-6 bg-white rounded-xl shadow-sm">
+                <i className={`fas ${item.icon} text-3xl text-[#004aad] mb-4`}></i>
+                <h3 className="text-lg font-bold text-slate-900 mb-2">{item.title}</h3>
+                <p className="text-slate-600">{item.info}</p>
               </div>
             ))}
           </div>
-        </motion.div>
+        </div>
       </section>
 
-      {/* Footer */}
-      <footer className="mt-auto px-[6%] py-8 border-t border-slate-100 flex flex-col md:flex-row justify-between gap-5 text-xs text-slate-400">
-        <div>
-          <p>© 2026 GK Insurance Solutions. All rights reserved.</p>
-          <p>Insurance is the subject matter of solicitation.</p>
-        </div>
+      <Footer />
 
-        <div className="font-semibold">
-          Powered by{' '}
-          <a
-            href="https://pixalara.com"
-            target="_blank"
-            className="text-[#004aad] hover:underline"
-          >
-            pixalara.com
-          </a>
+      {/* Quote Modal */}
+      {showQuoteModal && (
+        <div className="fixed inset-0 bg-black/50 z-100 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-8 relative">
+            <button
+              onClick={() => setShowQuoteModal(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-900"
+            >
+              <i className="fas fa-times text-2xl"></i>
+            </button>
+            <QuoteForm
+              productType={selectedProduct || undefined}
+              onClose={() => setShowQuoteModal(false)}
+            />
+          </div>
         </div>
-      </footer>
+      )}
     </main>
-  )
+  );
 }
-

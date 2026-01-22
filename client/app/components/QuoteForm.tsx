@@ -1,0 +1,201 @@
+'use client';
+
+import { useState, FormEvent } from 'react';
+
+interface QuoteFormProps {
+    productType?: string;
+    onClose?: () => void;
+}
+
+export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
+    const [formData, setFormData] = useState({
+        name: '',
+        phone: '',
+        email: '',
+        insurance_type: productType || '',
+        vehicle_number: '',
+        message: '',
+    });
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
+
+    const insuranceTypes = [
+        'Two-Wheeler Insurance',
+        'Car Insurance',
+        'Commercial Vehicle Insurance',
+        'Travel Insurance',
+        'Shopkeeper Insurance',
+        'Commercial Business Insurance',
+        'Health Insurance',
+        'Life Insurance',
+    ];
+
+    const handleSubmit = async (e: FormEvent) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+
+        try {
+            // Web3Forms API endpoint
+            const response = await fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    access_key: process.env.NEXT_PUBLIC_WEB3FORMS_KEY || 'YOUR_WEB3FORMS_ACCESS_KEY_HERE',
+                    subject: `New Insurance Quote Request - ${formData.insurance_type}`,
+                    from_name: 'GK Insurance Website',
+                    name: formData.name,
+                    phone: formData.phone,
+                    email: formData.email || 'Not provided',
+                    insurance_type: formData.insurance_type,
+                    vehicle_number: formData.vehicle_number || 'N/A',
+                    message: formData.message || 'No additional message',
+                }),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                setSubmitted(true);
+                // Reset form after 3 seconds
+                setTimeout(() => {
+                    setFormData({
+                        name: '',
+                        phone: '',
+                        email: '',
+                        insurance_type: '',
+                        vehicle_number: '',
+                        message: '',
+                    });
+                    if (onClose) onClose();
+                }, 3000);
+            } else {
+                alert('Something went wrong. Please try again or contact us directly.');
+            }
+        } catch (error) {
+            console.error('Error submitting form:', error);
+            alert('Failed to submit form. Please try again or call us directly.');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    if (submitted) {
+        return (
+            <div className="text-center py-12">
+                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i className="fas fa-check text-green-600 text-3xl"></i>
+                </div>
+                <h3 className="text-2xl font-bold text-slate-900 mb-2">Thank You!</h3>
+                <p className="text-slate-600 mb-4">Your quote request has been received successfully.</p>
+                <p className="text-sm text-slate-500">We'll contact you shortly with the best insurance quotes.</p>
+            </div>
+        );
+    }
+
+    return (
+        <form onSubmit={handleSubmit} className="space-y-5">
+            <h2 className="text-2xl font-bold text-slate-900 mb-6">
+                Get Your Insurance Quote
+            </h2>
+
+            <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Full Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                    type="text"
+                    required
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent"
+                    placeholder="Enter your full name"
+                />
+            </div>
+
+            <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Phone Number <span className="text-red-500">*</span>
+                </label>
+                <input
+                    type="tel"
+                    required
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent"
+                    placeholder="Enter your phone number"
+                />
+            </div>
+
+            <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Email Address
+                </label>
+                <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent"
+                    placeholder="Enter your email"
+                />
+            </div>
+
+            <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Insurance Type <span className="text-red-500">*</span>
+                </label>
+                <select
+                    required
+                    value={formData.insurance_type}
+                    onChange={(e) => setFormData({ ...formData, insurance_type: e.target.value })}
+                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent"
+                >
+                    <option value="">Select insurance type</option>
+                    {insuranceTypes.map((type) => (
+                        <option key={type} value={type}>
+                            {type}
+                        </option>
+                    ))}
+                </select>
+            </div>
+
+            {(formData.insurance_type.includes('Vehicle') || formData.insurance_type.includes('Wheeler') || formData.insurance_type.includes('Car')) && (
+                <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                        Vehicle Number
+                    </label>
+                    <input
+                        type="text"
+                        value={formData.vehicle_number}
+                        onChange={(e) => setFormData({ ...formData, vehicle_number: e.target.value })}
+                        className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent"
+                        placeholder="e.g., AP 01 AB 1234"
+                    />
+                </div>
+            )}
+
+            <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                    Message
+                </label>
+                <textarea
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    rows={4}
+                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent resize-none"
+                    placeholder="Any specific requirements..."
+                />
+            </div>
+
+            <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full py-3 bg-[#004aad] text-white font-bold rounded-lg hover:bg-[#003580] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                {isSubmitting ? 'Submitting...' : 'Get Quote'}
+            </button>
+        </form>
+    );
+}
