@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Lead } from '@/app/types';
 import { getLeads, updateLead, deleteLead } from '@/app/utils/storage';
+import ConfirmationModal from '@/app/components/ConfirmationModal';
 
 export default function LeadsPage() {
     const [leads, setLeads] = useState<Lead[]>([]);
@@ -11,6 +12,9 @@ export default function LeadsPage() {
     const [statusFilter, setStatusFilter] = useState<string>('all');
     const [editingLead, setEditingLead] = useState<Lead | null>(null);
     const [showEditModal, setShowEditModal] = useState(false);
+
+    // Deletion state
+    const [deleteId, setDeleteId] = useState<string | null>(null);
 
     const loadLeads = () => {
         const storedLeads = getLeads();
@@ -50,12 +54,18 @@ export default function LeadsPage() {
         }
     };
 
-    const handleDelete = (leadId: string) => {
-        if (confirm('Are you sure you want to delete this lead?')) {
-            const success = deleteLead(leadId);
+    // New Delete Handlers
+    const handleDeleteClick = (leadId: string) => {
+        setDeleteId(leadId);
+    };
+
+    const confirmDelete = () => {
+        if (deleteId) {
+            const success = deleteLead(deleteId);
             if (success) {
                 loadLeads();
             }
+            setDeleteId(null);
         }
     };
 
@@ -202,7 +212,7 @@ export default function LeadsPage() {
                                     Insurance Type
                                 </th>
                                 <th className="px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
-                                    Vehicle #
+                                    Vehicle 
                                 </th>
                                 <th className="px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
                                     Status
@@ -281,7 +291,7 @@ export default function LeadsPage() {
                                                 <i className="fas fa-edit"></i>
                                             </button>
                                             <button
-                                                onClick={() => handleDelete(lead.id)}
+                                                onClick={() => handleDeleteClick(lead.id)}
                                                 className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                                 title="Delete"
                                             >
@@ -305,7 +315,7 @@ export default function LeadsPage() {
 
             {/* Edit Modal */}
             {showEditModal && editingLead && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
                         <div className="p-6 border-b border-slate-200">
                             <h2 className="text-2xl font-black text-slate-900">Edit Lead</h2>
@@ -435,6 +445,15 @@ export default function LeadsPage() {
                     </div>
                 </div>
             )}
+
+            {/* Delete Confirmation Modal */}
+            <ConfirmationModal
+                isOpen={!!deleteId}
+                title="Delete Lead?"
+                message="Are you sure you want to delete this lead? This action cannot be undone."
+                onConfirm={confirmDelete}
+                onCancel={() => setDeleteId(null)}
+            />
         </div>
     );
 }

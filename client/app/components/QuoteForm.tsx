@@ -36,63 +36,69 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
         setIsSubmitting(true);
 
         try {
-            // Web3Forms API endpoint
-            const response = await fetch('https://api.web3forms.com/submit', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({
-                    access_key: process.env.NEXT_PUBLIC_WEB3FORMS_KEY,
-                    subject: `New Insurance Quote Request - ${formData.insurance_type}`,
-                    from_name: 'GK Insurance Website',
-                    name: formData.name,
-                    phone: formData.phone,
-                    email: formData.email,
-                    insurance_type: formData.insurance_type,
-                    vehicle_number: formData.vehicle_number,
-                    message: formData.message,
-                }),
+            // 1. Save to LocalStorage (Priority for Admin Dashboard)
+            saveLead({
+                name: formData.name,
+                phone: formData.phone,
+                email: formData.email || undefined,
+                insurance_type: formData.insurance_type,
+                vehicle_number: formData.vehicle_number || undefined,
+                message: formData.message || undefined,
+                status: 'new',
+                source: 'website',
             });
 
-            const data = await response.json();
+            // 2. Try Email Sending (Web3Forms) if key exists
+            const apiKey = process.env.NEXT_PUBLIC_WEB3FORMS_KEY;
 
-            if (data.success) {
-                // Save to localStorage for admin access
+            if (apiKey) {
                 try {
-                    saveLead({
-                        name: formData.name,
-                        phone: formData.phone,
-                        email: formData.email || undefined,
-                        insurance_type: formData.insurance_type,
-                        vehicle_number: formData.vehicle_number || undefined,
-                        message: formData.message || undefined,
-                        status: 'new',
-                        source: 'website',
+                    const response = await fetch('https://api.web3forms.com/submit', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            access_key: apiKey,
+                            subject: `New Insurance Quote Request - ${formData.insurance_type}`,
+                            from_name: 'GK Insurance Website',
+                            name: formData.name,
+                            phone: formData.phone,
+                            email: formData.email,
+                            insurance_type: formData.insurance_type,
+                            vehicle_number: formData.vehicle_number,
+                            message: formData.message,
+                        }),
                     });
-                } catch (error) {
-                    console.error('Error saving lead to localStorage:', error);
+                    // We don't block success if email fails, mostly just log it
+                    const data = await response.json();
+                    if (!data.success) console.warn('Web3Forms submission failed:', data);
+                } catch (emailError) {
+                    console.warn('Email sending skipped/failed:', emailError);
                 }
-
-                setSubmitted(true);
-                // Reset form after 3 seconds
-                setTimeout(() => {
-                    setFormData({
-                        name: '',
-                        phone: '',
-                        email: '',
-                        insurance_type: '',
-                        vehicle_number: '',
-                        message: '',
-                    });
-                    if (onClose) onClose();
-                }, 3000);
             } else {
-                alert('Something went wrong. Please try again or contact us directly.');
+                console.log('Web3Forms API Key missing - Simulating email submission');
             }
+
+            // 3. Show Success State
+            setSubmitted(true);
+
+            // Reset form logic
+            setTimeout(() => {
+                setFormData({
+                    name: '',
+                    phone: '',
+                    email: '',
+                    insurance_type: '',
+                    vehicle_number: '',
+                    message: '',
+                });
+                if (onClose) onClose();
+            }, 50000); // Extended timeout so user sees the message
+
         } catch (error) {
-            console.error('Error submitting form:', error);
+            console.error('Critical error submitting form:', error);
             alert('Failed to submit form. Please try again or call us directly.');
         } finally {
             setIsSubmitting(false);
@@ -111,8 +117,17 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                     <p className="text-sm text-slate-500">We'll contact you shortly. For faster response:</p>
                     <button
                         onClick={() => {
-                            const msg = encodeURIComponent(`Hi, I just submitted a quote request for ${formData.insurance_type}. My name is ${formData.name}.`);
-                            window.open(`https://wa.me/919573322990?text=${msg}`, '_blank');
+                            const details = [
+                                `*New Quote Request*`,
+                                `Name: ${formData.name}`,
+                                `Phone: ${formData.phone}`,
+                                formData.email ? `Email: ${formData.email}` : '',
+                                `Type: ${formData.insurance_type}`,
+                                formData.vehicle_number ? `Vehicle: ${formData.vehicle_number}` : '',
+                                formData.message ? `Message: ${formData.message}` : ''
+                            ].filter(Boolean).join('%0a');
+
+                            window.open(`https://wa.me/919573322990?text=${details}`, '_blank');
                         }}
                         className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600 transition-colors mx-auto"
                     >
