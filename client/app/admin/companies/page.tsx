@@ -36,28 +36,30 @@ export default function CompaniesPage() {
         'Bajaj Life Insurance': '/BajajLife.png',
     };
 
-    useEffect(() => {
-        setTimeout(() => {
-            loadCompanies();
-        }, 300);
-    }, []);
+  useEffect(() => {
+    loadCompanies();
+  }, []);
 
-    const filteredCompanies = companies.filter(company =>
-        categoryFilter === 'all' || company.category === categoryFilter
-    );
+  const filteredCompanies = companies.filter(
+    (company) => categoryFilter === 'all' || company.category === categoryFilter
+  );
 
-    const toggleActive = (id: string) => {
-        const company = companies.find(c => c.id === id);
-        if (company) {
-            updateCompany(id, { is_active: !company.is_active });
-            loadCompanies();
-        }
-    };
+  const toggleActive = async (id: string) => {
+    const company = companies.find((c) => c.id === id);
+    if (company) {
+      try {
+        await updateCompany(id, { is_active: !company.is_active });
+        loadCompanies();
+      } catch (error) {
+        console.error('Error toggling active status:', error);
+      }
+    }
+  };
 
-    const handleEdit = (company: InsuranceCompany) => {
-        setEditingCompany({ ...company });
-        setShowEditModal(true);
-    };
+  const handleEdit = (company: InsuranceCompany) => {
+    setEditingCompany({ ...company });
+    setShowEditModal(true);
+  };
 
     const handleDeleteClick = (id: string) => {
         setDeleteId(id);
@@ -71,103 +73,107 @@ export default function CompaniesPage() {
         }
     };
 
-    const getCategoryBadge = (category: string) => {
-        const badges = {
-            general: 'bg-blue-100 text-blue-700',
-            health: 'bg-green-100 text-green-700',
-            life: 'bg-purple-100 text-purple-700',
-        };
-        return badges[category as keyof typeof badges];
+  const getCategoryBadge = (category: string) => {
+    const badges = {
+      general: 'bg-blue-100 text-blue-700',
+      health: 'bg-green-100 text-green-700',
+      life: 'bg-purple-100 text-purple-700',
     };
+    return badges[category as keyof typeof badges];
+  };
 
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center h-96">
-                <div className="animate-pulse text-slate-400">
-                    <i className="fas fa-spinner fa-spin text-4xl"></i>
-                </div>
-            </div>
-        );
-    }
-
+  if (loading) {
     return (
-        <div>
-            {/* Header */}
-            <div className="mb-8 flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl font-black text-slate-900 mb-2">Insurance Companies</h1>
-                    <p className="text-slate-600">Manage your insurance company partners</p>
-                </div>
-                <button
-                    onClick={() => setShowAddModal(true)}
-                    className="px-6 py-3 bg-[#004aad] text-white font-bold rounded-lg hover:bg-[#003580] transition-all duration-300 flex items-center gap-2"
-                >
-                    <i className="fas fa-plus"></i>
-                    Add Company
-                </button>
-            </div>
+      <div className="flex items-center justify-center h-96">
+        <div className="animate-pulse text-slate-400">
+          <i className="fas fa-spinner fa-spin text-4xl"></i>
+        </div>
+      </div>
+    );
+  }
 
-            {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <button
-                    onClick={() => setCategoryFilter('all')}
-                    className={`bg-white rounded-xl p-4 border-2 transition-all text-left ${categoryFilter === 'all' ? 'border-[#004aad] shadow-lg' : 'border-slate-200'
-                        }`}
-                >
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-slate-600 font-medium">All Companies</p>
-                            <p className="text-2xl font-black text-slate-900">{companies.length}</p>
-                        </div>
-                        <i className="fas fa-building text-2xl text-slate-500"></i>
-                    </div>
-                </button>
-                <button
-                    onClick={() => setCategoryFilter('general')}
-                    className={`bg-white rounded-xl p-4 border-2 transition-all text-left ${categoryFilter === 'general' ? 'border-blue-500 shadow-lg' : 'border-slate-200'
-                        }`}
-                >
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-slate-600 font-medium">General</p>
-                            <p className="text-2xl font-black text-blue-600">
-                                {companies.filter(c => c.category === 'general').length}
-                            </p>
-                        </div>
-                        <i className="fas fa-car text-2xl text-blue-500"></i>
-                    </div>
-                </button>
-                <button
-                    onClick={() => setCategoryFilter('health')}
-                    className={`bg-white rounded-xl p-4 border-2 transition-all text-left ${categoryFilter === 'health' ? 'border-green-500 shadow-lg' : 'border-slate-200'
-                        }`}
-                >
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-slate-600 font-medium">Health</p>
-                            <p className="text-2xl font-black text-green-600">
-                                {companies.filter(c => c.category === 'health').length}
-                            </p>
-                        </div>
-                        <i className="fas fa-heart-pulse text-2xl text-green-500"></i>
-                    </div>
-                </button>
-                <button
-                    onClick={() => setCategoryFilter('life')}
-                    className={`bg-white rounded-xl p-4 border-2 transition-all text-left ${categoryFilter === 'life' ? 'border-purple-500 shadow-lg' : 'border-slate-200'
-                        }`}
-                >
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="text-sm text-slate-600 font-medium">Life</p>
-                            <p className="text-2xl font-black text-purple-600">
-                                {companies.filter(c => c.category === 'life').length}
-                            </p>
-                        </div>
-                        <i className="fas fa-hand-holding-heart text-2xl text-purple-500"></i>
-                    </div>
-                </button>
+  return (
+    <div>
+      {/* Header */}
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-black text-slate-900 mb-2">Insurance Companies</h1>
+          <p className="text-slate-600">Manage your insurance company partners</p>
+        </div>
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="px-6 py-3 bg-[#004aad] text-white font-bold rounded-lg hover:bg-[#003580] transition-all duration-300 flex items-center gap-2"
+        >
+          <i className="fas fa-plus"></i>
+          Add Company
+        </button>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <button
+          onClick={() => setCategoryFilter('all')}
+          className={`bg-white rounded-xl p-4 border-2 transition-all text-left ${
+            categoryFilter === 'all' ? 'border-[#004aad] shadow-lg' : 'border-slate-200'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-slate-600 font-medium">All Companies</p>
+              <p className="text-2xl font-black text-slate-900">{companies.length}</p>
             </div>
+            <i className="fas fa-building text-2xl text-slate-500"></i>
+          </div>
+        </button>
+        <button
+          onClick={() => setCategoryFilter('general')}
+          className={`bg-white rounded-xl p-4 border-2 transition-all text-left ${
+            categoryFilter === 'general' ? 'border-blue-500 shadow-lg' : 'border-slate-200'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-slate-600 font-medium">General</p>
+              <p className="text-2xl font-black text-blue-600">
+                {companies.filter((c) => c.category === 'general').length}
+              </p>
+            </div>
+            <i className="fas fa-car text-2xl text-blue-500"></i>
+          </div>
+        </button>
+        <button
+          onClick={() => setCategoryFilter('health')}
+          className={`bg-white rounded-xl p-4 border-2 transition-all text-left ${
+            categoryFilter === 'health' ? 'border-green-500 shadow-lg' : 'border-slate-200'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-slate-600 font-medium">Health</p>
+              <p className="text-2xl font-black text-green-600">
+                {companies.filter((c) => c.category === 'health').length}
+              </p>
+            </div>
+            <i className="fas fa-heart-pulse text-2xl text-green-500"></i>
+          </div>
+        </button>
+        <button
+          onClick={() => setCategoryFilter('life')}
+          className={`bg-white rounded-xl p-4 border-2 transition-all text-left ${
+            categoryFilter === 'life' ? 'border-purple-500 shadow-lg' : 'border-slate-200'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-slate-600 font-medium">Life</p>
+              <p className="text-2xl font-black text-purple-600">
+                {companies.filter((c) => c.category === 'life').length}
+              </p>
+            </div>
+            <i className="fas fa-hand-holding-heart text-2xl text-purple-500"></i>
+          </div>
+        </button>
+      </div>
 
             {/* Companies Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -242,16 +248,17 @@ export default function CompaniesPage() {
                 })}
             </div>
 
-            {/* Add Company Modal */}
-            {showAddModal && (
-                <AddCompanyModal
-                    onClose={() => setShowAddModal(false)}
-                    onAdd={() => {
-                        loadCompanies();
-                        setShowAddModal(false);
-                    }}
-                />
-            )}
+      {/* Add Company Modal */}
+      {showAddModal && (
+        <CompanyModal
+          onClose={() => setShowAddModal(false)}
+          onSave={async (data) => {
+            await saveCompany(data); // Supabase action
+            loadCompanies();
+            setShowAddModal(false);
+          }}
+        />
+      )}
 
             {/* Edit Company Modal */}
             {showEditModal && editingCompany && (
@@ -310,32 +317,34 @@ function AddCompanyModal({ onClose, onAdd }: { onClose: () => void; onAdd: () =>
         onAdd();
     };
 
-    return (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-3xl max-w-md w-full p-8 relative">
-                <button
-                    onClick={onClose}
-                    className="absolute top-4 right-4 text-slate-400 hover:text-slate-900"
-                >
-                    <i className="fas fa-times text-2xl"></i>
-                </button>
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-3xl max-w-md w-full p-8 relative">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-slate-400 hover:text-slate-900"
+        >
+          <i className="fas fa-times text-2xl"></i>
+        </button>
 
-                <h2 className="text-2xl font-bold text-slate-900 mb-6">Add New Company</h2>
+        <h2 className="text-2xl font-bold text-slate-900 mb-6">
+          {company ? 'Edit Company' : 'Add New Company'}
+        </h2>
 
-                <form onSubmit={handleSubmit} className="space-y-5">
-                    <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">
-                            Company Name <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            required
-                            value={formData.name}
-                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent"
-                            placeholder="Enter company name"
-                        />
-                    </div>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">
+              Company Name <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              required
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent"
+              placeholder="Enter company name"
+            />
+          </div>
 
                     <div>
                         <label className="block text-sm font-semibold text-slate-700 mb-2">
@@ -502,49 +511,47 @@ function EditCompanyModal({ company, onClose, onSave }: { company: InsuranceComp
                         </div>
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">
-                            Status
-                        </label>
-                        <div className="flex gap-4">
-                            <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                    type="radio"
-                                    checked={formData.is_active === true}
-                                    onChange={() => setFormData({ ...formData, is_active: true })}
-                                    className="w-4 h-4 text-[#004aad]"
-                                />
-                                <span className="text-sm font-medium text-slate-700">Active</span>
-                            </label>
-                            <label className="flex items-center gap-2 cursor-pointer">
-                                <input
-                                    type="radio"
-                                    checked={formData.is_active === false}
-                                    onChange={() => setFormData({ ...formData, is_active: false })}
-                                    className="w-4 h-4 text-[#004aad]"
-                                />
-                                <span className="text-sm font-medium text-slate-700">Inactive</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div className="flex gap-3 pt-4">
-                        <button
-                            type="submit"
-                            className="flex-1 py-3 bg-[#004aad] text-white font-bold rounded-lg hover:bg-[#003580] transition-all duration-300"
-                        >
-                            Save Changes
-                        </button>
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="px-6 py-3 border border-slate-300 text-slate-700 font-semibold rounded-lg hover:bg-slate-50 transition-all"
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </form>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">Status</label>
+            <div className="flex gap-4">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  checked={formData.is_active === true}
+                  onChange={() => setFormData({ ...formData, is_active: true })}
+                  className="w-4 h-4 text-[#004aad]"
+                />
+                <span className="text-sm font-medium text-slate-700">Active</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  checked={formData.is_active === false}
+                  onChange={() => setFormData({ ...formData, is_active: false })}
+                  className="w-4 h-4 text-[#004aad]"
+                />
+                <span className="text-sm font-medium text-slate-700">Inactive</span>
+              </label>
             </div>
-        </div>
-    );
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <button
+              type="submit"
+              className="flex-1 py-3 bg-[#004aad] text-white font-bold rounded-lg hover:bg-[#003580] transition-all duration-300"
+            >
+              {company ? 'Save Changes' : 'Add Company'}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-6 py-3 border border-slate-300 text-slate-700 font-semibold rounded-lg hover:bg-slate-50 transition-all"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 }
