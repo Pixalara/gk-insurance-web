@@ -83,6 +83,11 @@ const insurancePartners = {
     { name: 'Bajaj Life', logo: '/bajajlife.png' },
   ],
 };
+const handleClickWhatsApp = () => {
+  const message = encodeURIComponent('Hi GK Insurance, I need help with insurance quotes');
+  const phone = '919573322990';
+  window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+};
 
 export default function HomePage() {
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
@@ -125,7 +130,7 @@ export default function HomePage() {
                 Get Quote <i className="fas fa-arrow-right"></i>
               </a>
               <button
-                onClick={() => {/* WhatsApp action */ }}
+                onClick={() => { handleClickWhatsApp() }}
                 className="px-8 py-4 bg-green-500 text-white font-bold text-lg rounded-md hover:bg-green-600 transition-all duration-300 hover:shadow-xl inline-flex items-center gap-2"
               >
                 <i className="fab fa-whatsapp"></i> WhatsApp Now

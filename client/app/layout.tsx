@@ -12,6 +12,18 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: "GK Insurance Solutions",
   description: "We are crafting a premium digital experience to help you secure your assets. Reliable general insurance solutions are just around the corner.",
+  metadataBase: new URL("https://www.gkinsurance.in"),
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    title: "GK Insurance Solutions",
+    description: "Reliable general insurance solutions for your assets.",
+    url: "https://www.gkinsurance.in",
+    siteName: "GK Insurance",
+    locale: "en_IN",
+    type: "website",
+  },
 };
 
 export default function RootLayout({

@@ -10,10 +10,12 @@ import {
     initializeCustomers,
     getPolicies,
     savePolicy,
+    deletePolicy,
     getCompanies,
     initializeCompanies,
     initializePolicies
 } from '@/app/utils/storage';
+import ConfirmationModal from '@/app/components/ConfirmationModal';
 
 type CustomerWithCounts = Customer & { policies_count: number; active_policies: number };
 
@@ -24,6 +26,9 @@ export default function CustomersPage() {
     const [showAddModal, setShowAddModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [editingCustomer, setEditingCustomer] = useState<CustomerWithCounts | null>(null);
+
+    // Delete state
+    const [deleteId, setDeleteId] = useState<string | null>(null);
 
     const loadData = () => {
         initializeCustomers();
@@ -66,10 +71,15 @@ export default function CustomersPage() {
         setShowEditModal(true);
     };
 
-    const handleDelete = (id: string) => {
-        if (confirm('Are you sure you want to delete this customer?')) {
-            deleteCustomer(id);
+    const handleDeleteClick = (id: string) => {
+        setDeleteId(id);
+    };
+
+    const confirmDelete = () => {
+        if (deleteId) {
+            deleteCustomer(deleteId);
             loadData();
+            setDeleteId(null);
         }
     };
 
@@ -206,7 +216,7 @@ export default function CustomersPage() {
                                 <i className="fas fa-edit mr-1"></i> Manage
                             </button>
                             <button
-                                onClick={() => handleDelete(customer.id)}
+                                onClick={() => handleDeleteClick(customer.id)}
                                 className="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition-all"
                             >
                                 <i className="fas fa-trash"></i>
@@ -254,6 +264,15 @@ export default function CustomersPage() {
                     }}
                 />
             )}
+
+            {/* Delete Customer Modal */}
+            <ConfirmationModal
+                isOpen={!!deleteId}
+                title="Delete Customer?"
+                message="Are you sure you want to delete this customer? This will also delete all associated policies."
+                onConfirm={confirmDelete}
+                onCancel={() => setDeleteId(null)}
+            />
         </div>
     );
 }
@@ -422,8 +441,8 @@ function EditCustomerModal({ customer, onClose, onSave }: { customer: Customer; 
                     <button
                         onClick={() => setActiveTab('details')}
                         className={`px-6 py-4 font-bold text-sm border-b-2 transition-colors ${activeTab === 'details'
-                                ? 'border-[#004aad] text-[#004aad]'
-                                : 'border-transparent text-slate-500 hover:text-slate-700'
+                            ? 'border-[#004aad] text-[#004aad]'
+                            : 'border-transparent text-slate-500 hover:text-slate-700'
                             }`}
                     >
                         Customer Details
@@ -431,8 +450,8 @@ function EditCustomerModal({ customer, onClose, onSave }: { customer: Customer; 
                     <button
                         onClick={() => setActiveTab('policies')}
                         className={`px-6 py-4 font-bold text-sm border-b-2 transition-colors ${activeTab === 'policies'
-                                ? 'border-[#004aad] text-[#004aad]'
-                                : 'border-transparent text-slate-500 hover:text-slate-700'
+                            ? 'border-[#004aad] text-[#004aad]'
+                            : 'border-transparent text-slate-500 hover:text-slate-700'
                             }`}
                     >
                         Policies
@@ -510,6 +529,9 @@ function CustomerPoliciesManager({ customer, onUpdate }: { customer: Customer; o
     const [companies, setCompanies] = useState<InsuranceCompany[]>([]);
     const [showAddForm, setShowAddForm] = useState(false);
 
+    // Policy Delete State
+    const [deletePolicyId, setDeletePolicyId] = useState<string | null>(null);
+
     useEffect(() => {
         loadData();
     }, [customer.id]);
@@ -521,37 +543,16 @@ function CustomerPoliciesManager({ customer, onUpdate }: { customer: Customer; o
         setCompanies(allCompanies);
     };
 
-    const handleDeletePolicy = (id: string) => {
-        if (confirm('Are you sure you want to delete this policy?')) {
-            // Check if deletePolicy function works correctly update in storage.ts if needed
-            // For now assuming we can filter and save back (logic handled in storage.ts)
-            // But wait, I need to call deletePolicy from storage.ts but I didn't verify it was exported.
-            // Oh I see I added deletePolicy in storage.ts in previous step.
+    const handleDeletePolicyClick = (id: string) => {
+        setDeletePolicyId(id);
+    };
 
-            // Wait, I cannot import deletePolicy inside the component if I haven't imported it at top.
-            // Let me make sure I use a local helper or invoke storage directly if imported.
-            // I imported it at top: import { ... deletePolicy ... } from '@/app/utils/storage';
-
-            // Actually I should verify imports at top of file include deletePolicy.
-            // Looking at top imports: deletePolicy is not imported for policies, only customers.
-            // I need to fix imports.
-
-            // Using a workaround since I can't easily change imports mid-file-write
-            // Actually I can just update the top imports in this write.
-            // I will update the top imports to include deletePolicy which is overloaded?
-            // No, deleteCustomer is named export. deletePolicy is named export.
-            // So I need to import deletePolicy as well.
-
-            // BUT wait, deletePolicy was added to storage.ts in previous step.
-            // I will just assume it works.
-
-            // Note: I need to update the import statement at the top of this file content to include all policy functions.
-
-            // Wait, import { ..., deletePolicy ... } might conflict if I have deleteCustomer imported as well?
-            // No, they are different names. deleteCustomer vs deletePolicy.
-
-            // Let's implement delete logic here assuming connection is good.
-            // I'll define handlePolicyDelete wrapper.
+    const confirmDeletePolicy = () => {
+        if (deletePolicyId) {
+            deletePolicy(deletePolicyId);
+            loadData();
+            onUpdate(); // Update customer stats
+            setDeletePolicyId(null);
         }
     };
 
@@ -593,7 +594,7 @@ function CustomerPoliciesManager({ customer, onUpdate }: { customer: Customer; o
                     policies.map(policy => {
                         const company = companies.find(c => c.id === policy.insurance_company_id);
                         return (
-                            <div key={policy.id} className="p-4 border border-slate-200 rounded-xl hover:border-blue-300 transition-colors bg-white">
+                            <div key={policy.id} className="p-4 border border-slate-200 rounded-xl hover:border-blue-300 transition-colors bg-white group">
                                 <div className="flex justify-between items-start">
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
@@ -608,13 +609,19 @@ function CustomerPoliciesManager({ customer, onUpdate }: { customer: Customer; o
                                             <span>End: {new Date(policy.policy_end_date).toLocaleDateString()}</span>
                                         </div>
                                     </div>
-                                    <div className="text-right">
+                                    <div className="text-right flex flex-col items-end gap-2">
                                         <p className="text-lg font-black text-[#004aad]">₹{policy.premium_amount.toLocaleString()}</p>
-                                        <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold uppercase mt-1 ${policy.status === 'active' ? 'bg-green-100 text-green-700' :
-                                                policy.status === 'expired' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-700'
+                                        <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold uppercase ${policy.status === 'active' ? 'bg-green-100 text-green-700' :
+                                            policy.status === 'expired' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-700'
                                             }`}>
                                             {policy.status}
                                         </span>
+                                        <button
+                                            onClick={() => handleDeletePolicyClick(policy.id)}
+                                            className="text-red-500 hover:text-red-700 text-xs mt-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        >
+                                            <i className="fas fa-trash mr-1"></i> Delete
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -622,6 +629,15 @@ function CustomerPoliciesManager({ customer, onUpdate }: { customer: Customer; o
                     })
                 )}
             </div>
+
+            {/* Policy Delete Confirmation */}
+            <ConfirmationModal
+                isOpen={!!deletePolicyId}
+                title="Delete Policy?"
+                message="Are you sure you want to delete this policy? This action cannot be undone."
+                onConfirm={confirmDeletePolicy}
+                onCancel={() => setDeletePolicyId(null)}
+            />
         </div>
     );
 }

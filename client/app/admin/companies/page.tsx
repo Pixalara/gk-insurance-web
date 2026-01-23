@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { InsuranceCompany } from '@/app/types';
 import { getCompanies, saveCompany, updateCompany, deleteCompany, initializeCompanies } from '@/app/utils/storage';
+import ConfirmationModal from '@/app/components/ConfirmationModal';
 
 export default function CompaniesPage() {
     const [companies, setCompanies] = useState<InsuranceCompany[]>([]);
@@ -12,11 +13,27 @@ export default function CompaniesPage() {
     const [showEditModal, setShowEditModal] = useState(false);
     const [editingCompany, setEditingCompany] = useState<InsuranceCompany | null>(null);
 
+    const [deleteId, setDeleteId] = useState<string | null>(null);
+
     const loadCompanies = () => {
         initializeCompanies(); // Initialize with mock data if empty
         const storedCompanies = getCompanies();
         setCompanies(storedCompanies);
         setLoading(false);
+    };
+
+    const LOGO_MAP: Record<string, string> = {
+        'Bajaj General Insurance': '/Bajaj.png',
+        'Tata AIG': '/tata.png',
+        'ICICI Lombard': '/icic.png',
+        'Go Digit': '/Godigit.png',
+        'Liberty General Insurance': '/Liberty.png',
+        'Star Health': '/starhealth.png',
+        'Bajaj Health': '/Bajaj.png',
+        'Bajaj Health Insurance': '/BajajHealth.png',
+        'LIC': '/lic.png',
+        'Bajaj Life': '/bajajlife.png',
+        'Bajaj Life Insurance': '/BajajLife.png',
     };
 
     useEffect(() => {
@@ -42,10 +59,15 @@ export default function CompaniesPage() {
         setShowEditModal(true);
     };
 
-    const handleDelete = (id: string) => {
-        if (confirm('Are you sure you want to delete this company?')) {
-            deleteCompany(id);
+    const handleDeleteClick = (id: string) => {
+        setDeleteId(id);
+    };
+
+    const confirmDelete = () => {
+        if (deleteId) {
+            deleteCompany(deleteId);
             loadCompanies();
+            setDeleteId(null);
         }
     };
 
@@ -149,61 +171,75 @@ export default function CompaniesPage() {
 
             {/* Companies Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredCompanies.map((company) => (
-                    <div
-                        key={company.id}
-                        className={`bg-white rounded-2xl shadow-sm border-2 p-6 transition-all duration-300 ${company.is_active
-                            ? 'border-slate-200 hover:shadow-lg'
-                            : 'border-slate-200 opacity-60'
-                            }`}
-                    >
-                        {/* Company Logo Placeholder */}
-                        <div className="w-full h-24 bg-slate-100 rounded-lg flex items-center justify-center mb-4">
-                            <i className="fas fa-building text-3xl text-slate-300"></i>
-                        </div>
+                {filteredCompanies.map((company) => {
+                    // Prioritize user-uploaded logo, then fallback to map/partial match
+                    const logoSrc = company.logo_url || LOGO_MAP[company.name] ||
+                        Object.entries(LOGO_MAP).find(([key]) => company.name.includes(key))?.[1];
 
-                        {/* Company Name */}
-                        <h3 className="text-lg font-bold text-slate-900 mb-2">{company.name}</h3>
-
-                        {/* Category Badge */}
-                        <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-4 ${getCategoryBadge(company.category)}`}>
-                            {company.category.charAt(0).toUpperCase() + company.category.slice(1)}
-                        </span>
-
-                        {/* Actions */}
-                        <div className="flex gap-2 mt-4">
-                            <button
-                                onClick={() => toggleActive(company.id)}
-                                className={`flex-1 py-2 rounded-lg font-semibold text-sm transition-all ${company.is_active
-                                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                                    }`}
-                            >
-                                {company.is_active ? (
-                                    <>
-                                        <i className="fas fa-check-circle mr-1"></i> Active
-                                    </>
+                    return (
+                        <div
+                            key={company.id}
+                            className={`bg-white rounded-2xl shadow-sm border-2 p-6 transition-all duration-300 ${company.is_active
+                                ? 'border-slate-200 hover:shadow-lg'
+                                : 'border-slate-200 opacity-60'
+                                }`}
+                        >
+                            {/* Company Logo Placeholder */}
+                            <div className="w-full h-40 bg-white rounded-lg flex items-center justify-center mb-4 p-4 overflow-hidden relative">
+                                {logoSrc ? (
+                                    <img
+                                        src={logoSrc}
+                                        alt={company.name}
+                                        className="max-w-full max-h-full object-contain"
+                                    />
                                 ) : (
-                                    <>
-                                        <i className="fas fa-times-circle mr-1"></i> Inactive
-                                    </>
+                                    <i className="fas fa-building text-3xl text-slate-300"></i>
                                 )}
-                            </button>
-                            <button
-                                onClick={() => handleEdit(company)}
-                                className="px-4 py-2 border border-slate-300 text-slate-600 rounded-lg hover:bg-slate-50 transition-all"
-                            >
-                                <i className="fas fa-edit"></i>
-                            </button>
-                            <button
-                                onClick={() => handleDelete(company.id)}
-                                className="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition-all"
-                            >
-                                <i className="fas fa-trash"></i>
-                            </button>
+                            </div>
+
+                            {/* Company Name */}
+                            <h3 className="text-lg font-bold text-slate-900 mb-2 truncate" title={company.name}>{company.name}</h3>
+
+                            {/* Category Badge */}
+                            <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-4 ${getCategoryBadge(company.category)}`}>
+                                {company.category.charAt(0).toUpperCase() + company.category.slice(1)}
+                            </span>
+
+                            {/* Actions */}
+                            <div className="flex gap-2 mt-4">
+                                <button
+                                    onClick={() => toggleActive(company.id)}
+                                    className={`flex-1 py-2 rounded-lg font-semibold text-sm transition-all ${company.is_active
+                                        ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                                        }`}
+                                >
+                                    {company.is_active ? (
+                                        <>
+                                            <i className="fas fa-check-circle mr-1"></i> Active
+                                        </>
+                                    ) : (
+                                        <>
+                                            <i className="fas fa-times-circle mr-1"></i> Inactive
+                                        </>
+                                    )}
+                                </button>
+                                <button
+                                    onClick={() => handleEdit(company)}
+                                    className="px-4 py-2 border border-slate-300 text-slate-600 rounded-lg hover:bg-slate-50 transition-all"
+                                >
+                                    <i className="fas fa-edit"></i>
+                                </button>
+                                <button
+                                    onClick={() => handleDeleteClick(company.id)}
+                                    className="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition-all"
+                                >
+                                    <i className="fas fa-trash"></i>
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
             {/* Add Company Modal */}
@@ -232,6 +268,15 @@ export default function CompaniesPage() {
                     }}
                 />
             )}
+
+            {/* Delete Confirmation Modal */}
+            <ConfirmationModal
+                isOpen={!!deleteId}
+                title="Delete Company?"
+                message="Are you sure you want to delete this company? This action cannot be undone."
+                onConfirm={confirmDelete}
+                onCancel={() => setDeleteId(null)}
+            />
         </div>
     );
 }
@@ -240,7 +285,19 @@ function AddCompanyModal({ onClose, onAdd }: { onClose: () => void; onAdd: () =>
     const [formData, setFormData] = useState({
         name: '',
         category: 'general' as 'general' | 'health' | 'life',
+        logo_url: '',
     });
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setFormData(prev => ({ ...prev, logo_url: reader.result as string }));
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -248,6 +305,7 @@ function AddCompanyModal({ onClose, onAdd }: { onClose: () => void; onAdd: () =>
             name: formData.name,
             category: formData.category,
             is_active: true,
+            logo_url: formData.logo_url,
         });
         onAdd();
     };
@@ -295,6 +353,37 @@ function AddCompanyModal({ onClose, onAdd }: { onClose: () => void; onAdd: () =>
                         </select>
                     </div>
 
+                    <div>
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">
+                            Company Logo
+                        </label>
+                        <div className="flex items-center gap-4">
+                            {formData.logo_url && (
+                                <div className="w-32 h-32 border border-slate-200 rounded-lg flex items-center justify-center bg-slate-50 relative group">
+                                    <img src={formData.logo_url} alt="Preview" className="max-w-full max-h-full object-contain" />
+                                    <button
+                                        type="button"
+                                        onClick={() => setFormData({ ...formData, logo_url: '' })}
+                                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                                    >
+                                        <i className="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            )}
+                            <label className="cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                                <i className="fas fa-camera"></i>
+                                <span>{formData.logo_url ? 'Change Photo' : 'Upload Photo'}</span>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleImageChange}
+                                    className="hidden"
+                                />
+                            </label>
+                        </div>
+                        <p className="text-xs text-slate-400 mt-2">Recommended: PNG with transparent background</p>
+                    </div>
+
                     <div className="flex gap-3 pt-4">
                         <button
                             type="submit"
@@ -321,7 +410,19 @@ function EditCompanyModal({ company, onClose, onSave }: { company: InsuranceComp
         name: company.name,
         category: company.category,
         is_active: company.is_active,
+        logo_url: company.logo_url || '',
     });
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setFormData(prev => ({ ...prev, logo_url: reader.result as string }));
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -369,6 +470,36 @@ function EditCompanyModal({ company, onClose, onSave }: { company: InsuranceComp
                             <option value="health">Health Insurance</option>
                             <option value="life">Life Insurance</option>
                         </select>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-semibold text-slate-700 mb-2">
+                            Company Logo
+                        </label>
+                        <div className="flex items-center gap-4">
+                            {formData.logo_url && (
+                                <div className="w-32 h-32 border border-slate-200 rounded-lg flex items-center justify-center bg-slate-50 relative group">
+                                    <img src={formData.logo_url} alt="Preview" className="max-w-full max-h-full object-contain" />
+                                    <button
+                                        type="button"
+                                        onClick={() => setFormData({ ...formData, logo_url: '' })}
+                                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                                    >
+                                        <i className="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            )}
+                            <label className="cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                                <i className="fas fa-camera"></i>
+                                <span>{formData.logo_url ? 'Change Photo' : 'Upload Photo'}</span>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleImageChange}
+                                    className="hidden"
+                                />
+                            </label>
+                        </div>
                     </div>
 
                     <div>
