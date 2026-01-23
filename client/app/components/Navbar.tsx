@@ -53,7 +53,7 @@ export default function Navbar() {
                 {/* Mobile Menu */}
                 {mobileMenuOpen && (
                     <div className="md:hidden py-4 border-t border-slate-100">
-                        <div className="flex flex-col gap-4">
+                        <div className="flex flex-col gap-4 items-center">
                             <Link href="/" className="text-sm font-semibold text-slate-700 hover:text-[#004aad] transition-colors">
                                 Home
                             </Link>
@@ -68,7 +68,7 @@ export default function Navbar() {
                             </Link>
                             <a
                                 href="/#quote"
-                                className="px-6 py-2.5 bg-[#004aad] text-white font-bold text-sm rounded-full hover:bg-[#003580] transition-all text-center"
+                                className="px-6 py-2.5 bg-[#004aad] w-[80%] text-white font-bold text-sm rounded hover:bg-[#003580] transition-all text-center"
                             >
                                 Get Quote
                             </a>

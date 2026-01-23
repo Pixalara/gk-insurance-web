@@ -11,56 +11,56 @@ const insuranceProducts = [
   {
     id: 'two-wheeler',
     name: 'Two-Wheeler Insurance',
-    icon: 'fa-motorcycle',
+    image: '/bike.jpg',
     description: 'Comprehensive coverage for your bike with affordable premiums',
     features: ['Third-party coverage', 'Own damage', 'Personal accident'],
   },
   {
     id: 'car',
     name: 'Car Insurance',
-    icon: 'fa-car',
+    image: '/car.jpg',
     description: 'Complete protection for your car against all risks',
     features: ['Comprehensive coverage', 'Zero depreciation', '24/7 roadside assistance'],
   },
   {
     id: 'commercial-vehicle',
     name: 'Commercial Vehicle',
-    icon: 'fa-truck',
+    image: '/commercial.jpg',
     description: 'Tailored insurance for commercial vehicles',
     features: ['Goods in transit', 'Driver coverage', 'Liability protection'],
   },
   {
     id: 'travel',
     name: 'Travel Insurance',
-    icon: 'fa-plane-departure',
+    image: '/travel.jpg',
     description: 'Travel worry-free with comprehensive coverage',
     features: ['Medical emergencies', 'Trip cancellation', 'Lost baggage'],
   },
   {
     id: 'shopkeeper',
     name: 'Shopkeeper Insurance',
-    icon: 'fa-store',
+    image: '/shop.jpg',
     description: 'Protect your business premises and inventory',
     features: ['Fire coverage', 'Theft protection', 'Public liability'],
   },
   {
     id: 'business',
     name: 'Business Insurance',
-    icon: 'fa-briefcase',
+    image: '/bussiness.png',
     description: 'Comprehensive coverage for your business operations',
     features: ['Property damage', 'Business interruption', 'Liability coverage'],
   },
   {
     id: 'health',
     name: 'Health Insurance',
-    icon: 'fa-heart-pulse',
+    image: '/Health.jpg',
     description: 'Quality healthcare coverage for you and your family',
     features: ['Cashless hospitalization', 'Pre & post hospitalization', 'Day care procedures'],
   },
   {
     id: 'life',
     name: 'Life Insurance',
-    icon: 'fa-hand-holding-heart',
+    image: '/life1.jpg',
     description: 'Secure your family\'s future with life coverage',
     features: ['Life coverage', 'Maturity benefits', 'Tax benefits'],
   },
@@ -184,8 +184,8 @@ export default function HomePage() {
                 className="group bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl border border-slate-200 hover:border-[#004aad] cursor-pointer"
                 onClick={() => handleGetQuote(product.name)}
               >
-                <div className="w-16 h-16 bg-blue-50 rounded-xl flex items-center justify-center mb-4 group-hover:bg-[#004aad] duration-300 transition-all ease-in-out">
-                  <i className={`fas ${product.icon} text-2xl text-[#004aad] group-hover:text-white transition-colors`}></i>
+                <div className="w-full h-40 bg-white rounded-lg flex items-center justify-center mb-4 p-4 overflow-hidden relative">
+                  <img src={product.image} alt={product.name} className="w-full h-full object-contain p-2" />
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 mb-2">{product.name}</h3>
                 <p className="text-sm text-slate-600 mb-4">{product.description}</p>
