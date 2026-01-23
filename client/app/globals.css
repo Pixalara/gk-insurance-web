@@ -62,10 +62,27 @@ body{
 }
 
 /* SMOOTH SCROLLING */
-html {
-  scroll-behavior: smooth;
-  -ms-scroll-limit-x-max: true;
-  transition: all 300ms ease-in-out;
+
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
 }
 
 /* CUSTOM SCROLLBAR */

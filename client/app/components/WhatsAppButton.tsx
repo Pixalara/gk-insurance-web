@@ -14,7 +14,7 @@ export default function WhatsAppButton() {
             aria-label="Contact us on WhatsApp"
         >
             {/* Tooltip / Label - Expands on Hover */}
-            <div className="bg-white/90 backdrop-blur-md border border-slate-200 px-4 py-2 rounded-full shadow-lg transform translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300 hidden md:block">
+            <div className="bg-green-200/90 backdrop-blur-md border border-slate-200 px-4 py-2 rounded-full shadow-lg transform translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300 hidden md:block">
                 <p className="text-sm font-bold text-slate-800">Chat with us 👋</p>
                 <p className="text-xs text-slate-500">Online now</p>
             </div>

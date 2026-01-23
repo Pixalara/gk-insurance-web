@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from 'react';
 import { saveLead } from '@/app/utils/storage';
+import { useToast } from '@/app/context/ToastContext';
 
 interface QuoteFormProps {
     productType?: string;
@@ -9,6 +10,7 @@ interface QuoteFormProps {
 }
 
 export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
+    const { success, error: errorToast } = useToast();
     const [formData, setFormData] = useState({
         name: '',
         phone: '',
@@ -19,6 +21,7 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
+    const [errors, setErrors] = useState<Record<string, boolean>>({});
 
     const insuranceTypes = [
         'Two-Wheeler Insurance',
@@ -31,8 +34,24 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
         'Life Insurance',
     ];
 
+    const validateForm = () => {
+        const newErrors: Record<string, boolean> = {};
+        if (!formData.name.trim()) newErrors.name = true;
+        if (!formData.phone.trim()) newErrors.phone = true;
+        if (!formData.insurance_type) newErrors.insurance_type = true;
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
+
+        if (!validateForm()) {
+            errorToast('Please fill in all required fields.');
+            return;
+        }
+
         setIsSubmitting(true);
 
         try {
@@ -53,25 +72,32 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
 
             if (apiKey) {
                 try {
+                    // Conditional payload construction
+                    const emailPayload: any = {
+                        access_key: apiKey,
+                        subject: `New Insurance Quote Request - ${formData.insurance_type}`,
+                        from_name: 'GK Insurance Website',
+                        name: formData.name,
+                        phone: formData.phone,
+                        email: formData.email,
+                        insurance_type: formData.insurance_type,
+                        message: formData.message,
+                    };
+
+                    // Only include vehicle number if provided
+                    if (formData.vehicle_number) {
+                        emailPayload.vehicle_number = formData.vehicle_number;
+                    }
+
                     const response = await fetch('https://api.web3forms.com/submit', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             'Accept': 'application/json',
                         },
-                        body: JSON.stringify({
-                            access_key: apiKey,
-                            subject: `New Insurance Quote Request - ${formData.insurance_type}`,
-                            from_name: 'GK Insurance Website',
-                            name: formData.name,
-                            phone: formData.phone,
-                            email: formData.email,
-                            insurance_type: formData.insurance_type,
-                            vehicle_number: formData.vehicle_number,
-                            message: formData.message,
-                        }),
+                        body: JSON.stringify(emailPayload),
                     });
-                    // We don't block success if email fails, mostly just log it
+
                     const data = await response.json();
                     if (!data.success) console.warn('Web3Forms submission failed:', data);
                 } catch (emailError) {
@@ -83,6 +109,7 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
 
             // 3. Show Success State
             setSubmitted(true);
+            success('Quote request submitted successfully!');
 
             // Reset form logic
             setTimeout(() => {
@@ -95,11 +122,11 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                     message: '',
                 });
                 if (onClose) onClose();
-            }, 50000); // Extended timeout so user sees the message
+            }, 50000);
 
         } catch (error) {
             console.error('Critical error submitting form:', error);
-            alert('Failed to submit form. Please try again or call us directly.');
+            errorToast('Failed to submit form. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
@@ -107,7 +134,7 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
 
     if (submitted) {
         return (
-            <div className="text-center py-12">
+            <div className="text-center py-12 animate-in fade-in zoom-in duration-300">
                 <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <i className="fas fa-check text-green-600 text-3xl"></i>
                 </div>
@@ -157,10 +184,13 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                 </label>
                 <input
                     type="text"
-                    required
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent"
+                    onChange={(e) => {
+                        setFormData({ ...formData, name: e.target.value });
+                        if (errors.name) setErrors({ ...errors, name: false });
+                    }}
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] transition-all
+                        ${errors.name ? 'border-red-500 bg-red-50' : 'border-slate-300'}`}
                     placeholder="Enter your full name"
                 />
             </div>
@@ -171,10 +201,13 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                 </label>
                 <input
                     type="tel"
-                    required
                     value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent"
+                    onChange={(e) => {
+                        setFormData({ ...formData, phone: e.target.value });
+                        if (errors.phone) setErrors({ ...errors, phone: false });
+                    }}
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] transition-all
+                        ${errors.phone ? 'border-red-500 bg-red-50' : 'border-slate-300'}`}
                     placeholder="Enter your phone number"
                 />
             </div>
@@ -197,10 +230,13 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                     Insurance Type <span className="text-red-500">*</span>
                 </label>
                 <select
-                    required
                     value={formData.insurance_type}
-                    onChange={(e) => setFormData({ ...formData, insurance_type: e.target.value })}
-                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent"
+                    onChange={(e) => {
+                        setFormData({ ...formData, insurance_type: e.target.value });
+                        if (errors.insurance_type) setErrors({ ...errors, insurance_type: false });
+                    }}
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] transition-all
+                        ${errors.insurance_type ? 'border-red-500 bg-red-50' : 'border-slate-300'}`}
                 >
                     <option value="">Select insurance type</option>
                     {insuranceTypes.map((type) => (
@@ -212,7 +248,7 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
             </div>
 
             {(formData.insurance_type.includes('Vehicle') || formData.insurance_type.includes('Wheeler') || formData.insurance_type.includes('Car')) && (
-                <div>
+                <div className="animate-in slide-in-from-top-2 duration-300">
                     <label className="block text-sm font-semibold text-slate-700 mb-2">
                         Vehicle Number
                     </label>
@@ -242,7 +278,7 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
             <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-3 bg-[#004aad] text-white font-bold rounded-lg hover:bg-[#003580] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full py-3 bg-[#004aad] text-white font-bold rounded-lg hover:bg-[#003580] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-0.5 active:translate-y-0"
             >
                 {isSubmitting ? 'Submitting...' : 'Get Quote'}
             </button>
