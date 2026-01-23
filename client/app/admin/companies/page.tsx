@@ -6,35 +6,35 @@ import { getCompanies, saveCompany, updateCompany, deleteCompany, initializeComp
 import ConfirmationModal from '@/app/components/ConfirmationModal';
 
 export default function CompaniesPage() {
-    const [companies, setCompanies] = useState<InsuranceCompany[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [categoryFilter, setCategoryFilter] = useState<string>('all');
-    const [showAddModal, setShowAddModal] = useState(false);
-    const [showEditModal, setShowEditModal] = useState(false);
-    const [editingCompany, setEditingCompany] = useState<InsuranceCompany | null>(null);
+  const [companies, setCompanies] = useState<InsuranceCompany[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingCompany, setEditingCompany] = useState<InsuranceCompany | null>(null);
 
-    const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
-    const loadCompanies = () => {
-        initializeCompanies(); // Initialize with mock data if empty
-        const storedCompanies = getCompanies();
-        setCompanies(storedCompanies);
-        setLoading(false);
-    };
+  const loadCompanies = () => {
+    initializeCompanies(); // Initialize with mock data if empty
+    const storedCompanies = getCompanies();
+    setCompanies(storedCompanies);
+    setLoading(false);
+  };
 
-    const LOGO_MAP: Record<string, string> = {
-        'Bajaj General Insurance': '/Bajaj.png',
-        'Tata AIG': '/tata.png',
-        'ICICI Lombard': '/icic.png',
-        'Go Digit': '/Godigit.png',
-        'Liberty General Insurance': '/Liberty.png',
-        'Star Health': '/starhealth.png',
-        'Bajaj Health': '/Bajaj.png',
-        'Bajaj Health Insurance': '/BajajHealth.png',
-        'LIC': '/lic.png',
-        'Bajaj Life': '/bajajlife.png',
-        'Bajaj Life Insurance': '/BajajLife.png',
-    };
+  const LOGO_MAP: Record<string, string> = {
+    'Bajaj General Insurance': '/Bajaj.png',
+    'Tata AIG': '/tata.png',
+    'ICICI Lombard': '/icic.png',
+    'Go Digit': '/Godigit.png',
+    'Liberty General Insurance': '/Liberty.png',
+    'Star Health': '/starhealth.png',
+    'Bajaj Health': '/Bajaj.png',
+    'Bajaj Health Insurance': '/BajajHealth.png',
+    'LIC': '/lic.png',
+    'Bajaj Life': '/bajajlife.png',
+    'Bajaj Life Insurance': '/BajajLife.png',
+  };
 
   useEffect(() => {
     loadCompanies();
@@ -61,17 +61,17 @@ export default function CompaniesPage() {
     setShowEditModal(true);
   };
 
-    const handleDeleteClick = (id: string) => {
-        setDeleteId(id);
-    };
+  const handleDeleteClick = (id: string) => {
+    setDeleteId(id);
+  };
 
-    const confirmDelete = () => {
-        if (deleteId) {
-            deleteCompany(deleteId);
-            loadCompanies();
-            setDeleteId(null);
-        }
-    };
+  const confirmDelete = () => {
+    if (deleteId) {
+      deleteCompany(deleteId);
+      loadCompanies();
+      setDeleteId(null);
+    }
+  };
 
   const getCategoryBadge = (category: string) => {
     const badges = {
@@ -113,9 +113,8 @@ export default function CompaniesPage() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <button
           onClick={() => setCategoryFilter('all')}
-          className={`bg-white rounded-xl p-4 border-2 transition-all text-left ${
-            categoryFilter === 'all' ? 'border-[#004aad] shadow-lg' : 'border-slate-200'
-          }`}
+          className={`bg-white rounded-xl p-4 border-2 transition-all text-left ${categoryFilter === 'all' ? 'border-[#004aad] shadow-lg' : 'border-slate-200'
+            }`}
         >
           <div className="flex items-center justify-between">
             <div>
@@ -127,9 +126,8 @@ export default function CompaniesPage() {
         </button>
         <button
           onClick={() => setCategoryFilter('general')}
-          className={`bg-white rounded-xl p-4 border-2 transition-all text-left ${
-            categoryFilter === 'general' ? 'border-blue-500 shadow-lg' : 'border-slate-200'
-          }`}
+          className={`bg-white rounded-xl p-4 border-2 transition-all text-left ${categoryFilter === 'general' ? 'border-blue-500 shadow-lg' : 'border-slate-200'
+            }`}
         >
           <div className="flex items-center justify-between">
             <div>
@@ -143,9 +141,8 @@ export default function CompaniesPage() {
         </button>
         <button
           onClick={() => setCategoryFilter('health')}
-          className={`bg-white rounded-xl p-4 border-2 transition-all text-left ${
-            categoryFilter === 'health' ? 'border-green-500 shadow-lg' : 'border-slate-200'
-          }`}
+          className={`bg-white rounded-xl p-4 border-2 transition-all text-left ${categoryFilter === 'health' ? 'border-green-500 shadow-lg' : 'border-slate-200'
+            }`}
         >
           <div className="flex items-center justify-between">
             <div>
@@ -159,9 +156,8 @@ export default function CompaniesPage() {
         </button>
         <button
           onClick={() => setCategoryFilter('life')}
-          className={`bg-white rounded-xl p-4 border-2 transition-all text-left ${
-            categoryFilter === 'life' ? 'border-purple-500 shadow-lg' : 'border-slate-200'
-          }`}
+          className={`bg-white rounded-xl p-4 border-2 transition-all text-left ${categoryFilter === 'life' ? 'border-purple-500 shadow-lg' : 'border-slate-200'
+            }`}
         >
           <div className="flex items-center justify-between">
             <div>
@@ -175,147 +171,146 @@ export default function CompaniesPage() {
         </button>
       </div>
 
-            {/* Companies Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredCompanies.map((company) => {
-                    // Prioritize user-uploaded logo, then fallback to map/partial match
-                    const logoSrc = company.logo_url || LOGO_MAP[company.name] ||
-                        Object.entries(LOGO_MAP).find(([key]) => company.name.includes(key))?.[1];
+      {/* Companies Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredCompanies.map((company) => {
+          // Prioritize user-uploaded logo, then fallback to map/partial match
+          const logoSrc = company.logo_url || LOGO_MAP[company.name] ||
+            Object.entries(LOGO_MAP).find(([key]) => company.name.includes(key))?.[1];
 
-                    return (
-                        <div
-                            key={company.id}
-                            className={`bg-white rounded-2xl shadow-sm border-2 p-6 transition-all duration-300 ${company.is_active
-                                ? 'border-slate-200 hover:shadow-lg'
-                                : 'border-slate-200 opacity-60'
-                                }`}
-                        >
-                            {/* Company Logo Placeholder */}
-                            <div className="w-full h-40 bg-white rounded-lg flex items-center justify-center mb-4 p-4 overflow-hidden relative">
-                                {logoSrc ? (
-                                    <img
-                                        src={logoSrc}
-                                        alt={company.name}
-                                        className="max-w-full max-h-full object-contain"
-                                    />
-                                ) : (
-                                    <i className="fas fa-building text-3xl text-slate-300"></i>
-                                )}
-                            </div>
+          return (
+            <div
+              key={company.id}
+              className={`bg-white rounded-2xl shadow-sm border-2 p-6 transition-all duration-300 ${company.is_active
+                ? 'border-slate-200 hover:shadow-lg'
+                : 'border-slate-200 opacity-60'
+                }`}
+            >
+              {/* Company Logo Placeholder */}
+              <div className="w-full h-40 bg-white rounded-lg flex items-center justify-center mb-4 p-4 overflow-hidden relative">
+                {logoSrc ? (
+                  <img
+                    src={logoSrc}
+                    alt={company.name}
+                    className="max-w-full max-h-full object-contain"
+                  />
+                ) : (
+                  <i className="fas fa-building text-3xl text-slate-300"></i>
+                )}
+              </div>
 
-                            {/* Company Name */}
-                            <h3 className="text-lg font-bold text-slate-900 mb-2 truncate" title={company.name}>{company.name}</h3>
+              {/* Company Name */}
+              <h3 className="text-lg font-bold text-slate-900 mb-2 truncate" title={company.name}>{company.name}</h3>
 
-                            {/* Category Badge */}
-                            <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-4 ${getCategoryBadge(company.category)}`}>
-                                {company.category.charAt(0).toUpperCase() + company.category.slice(1)}
-                            </span>
+              {/* Category Badge */}
+              <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-4 ${getCategoryBadge(company.category)}`}>
+                {company.category.charAt(0).toUpperCase() + company.category.slice(1)}
+              </span>
 
-                            {/* Actions */}
-                            <div className="flex gap-2 mt-4">
-                                <button
-                                    onClick={() => toggleActive(company.id)}
-                                    className={`flex-1 py-2 rounded-lg font-semibold text-sm transition-all ${company.is_active
-                                        ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                                        }`}
-                                >
-                                    {company.is_active ? (
-                                        <>
-                                            <i className="fas fa-check-circle mr-1"></i> Active
-                                        </>
-                                    ) : (
-                                        <>
-                                            <i className="fas fa-times-circle mr-1"></i> Inactive
-                                        </>
-                                    )}
-                                </button>
-                                <button
-                                    onClick={() => handleEdit(company)}
-                                    className="px-4 py-2 border border-slate-300 text-slate-600 rounded-lg hover:bg-slate-50 transition-all"
-                                >
-                                    <i className="fas fa-edit"></i>
-                                </button>
-                                <button
-                                    onClick={() => handleDeleteClick(company.id)}
-                                    className="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition-all"
-                                >
-                                    <i className="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    );
-                })}
+              {/* Actions */}
+              <div className="flex gap-2 mt-4">
+                <button
+                  onClick={() => toggleActive(company.id)}
+                  className={`flex-1 py-2 rounded-lg font-semibold text-sm transition-all ${company.is_active
+                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                    }`}
+                >
+                  {company.is_active ? (
+                    <>
+                      <i className="fas fa-check-circle mr-1"></i> Active
+                    </>
+                  ) : (
+                    <>
+                      <i className="fas fa-times-circle mr-1"></i> Inactive
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={() => handleEdit(company)}
+                  className="px-4 py-2 border border-slate-300 text-slate-600 rounded-lg hover:bg-slate-50 transition-all"
+                >
+                  <i className="fas fa-edit"></i>
+                </button>
+                <button
+                  onClick={() => handleDeleteClick(company.id)}
+                  className="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition-all"
+                >
+                  <i className="fas fa-trash"></i>
+                </button>
+              </div>
             </div>
+          );
+        })}
+      </div>
 
       {/* Add Company Modal */}
       {showAddModal && (
-        <CompanyModal
+        <AddCompanyModal
           onClose={() => setShowAddModal(false)}
-          onSave={async (data) => {
-            await saveCompany(data); // Supabase action
+          onAdd={() => {
             loadCompanies();
             setShowAddModal(false);
           }}
         />
       )}
 
-            {/* Edit Company Modal */}
-            {showEditModal && editingCompany && (
-                <EditCompanyModal
-                    company={editingCompany}
-                    onClose={() => {
-                        setShowEditModal(false);
-                        setEditingCompany(null);
-                    }}
-                    onSave={() => {
-                        loadCompanies();
-                        setShowEditModal(false);
-                        setEditingCompany(null);
-                    }}
-                />
-            )}
+      {/* Edit Company Modal */}
+      {showEditModal && editingCompany && (
+        <EditCompanyModal
+          company={editingCompany}
+          onClose={() => {
+            setShowEditModal(false);
+            setEditingCompany(null);
+          }}
+          onSave={() => {
+            loadCompanies();
+            setShowEditModal(false);
+            setEditingCompany(null);
+          }}
+        />
+      )}
 
-            {/* Delete Confirmation Modal */}
-            <ConfirmationModal
-                isOpen={!!deleteId}
-                title="Delete Company?"
-                message="Are you sure you want to delete this company? This action cannot be undone."
-                onConfirm={confirmDelete}
-                onCancel={() => setDeleteId(null)}
-            />
-        </div>
-    );
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={!!deleteId}
+        title="Delete Company?"
+        message="Are you sure you want to delete this company? This action cannot be undone."
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteId(null)}
+      />
+    </div>
+  );
 }
 
 function AddCompanyModal({ onClose, onAdd }: { onClose: () => void; onAdd: () => void }) {
-    const [formData, setFormData] = useState({
-        name: '',
-        category: 'general' as 'general' | 'health' | 'life',
-        logo_url: '',
+  const [formData, setFormData] = useState({
+    name: '',
+    category: 'general' as 'general' | 'health' | 'life',
+    logo_url: '',
+  });
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData(prev => ({ ...prev, logo_url: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    saveCompany({
+      name: formData.name,
+      category: formData.category,
+      is_active: true,
+      logo_url: formData.logo_url,
     });
-
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setFormData(prev => ({ ...prev, logo_url: reader.result as string }));
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        saveCompany({
-            name: formData.name,
-            category: formData.category,
-            is_active: true,
-            logo_url: formData.logo_url,
-        });
-        onAdd();
-    };
+    onAdd();
+  };
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
@@ -328,7 +323,7 @@ function AddCompanyModal({ onClose, onAdd }: { onClose: () => void; onAdd: () =>
         </button>
 
         <h2 className="text-2xl font-bold text-slate-900 mb-6">
-          {company ? 'Edit Company' : 'Add New Company'}
+          Add New Company
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-5">
@@ -346,170 +341,170 @@ function AddCompanyModal({ onClose, onAdd }: { onClose: () => void; onAdd: () =>
             />
           </div>
 
-                    <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">
-                            Category <span className="text-red-500">*</span>
-                        </label>
-                        <select
-                            required
-                            value={formData.category}
-                            onChange={(e) => setFormData({ ...formData, category: e.target.value as 'general' | 'health' | 'life' })}
-                            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent"
-                        >
-                            <option value="general">General Insurance</option>
-                            <option value="health">Health Insurance</option>
-                            <option value="life">Life Insurance</option>
-                        </select>
-                    </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">
+              Category <span className="text-red-500">*</span>
+            </label>
+            <select
+              required
+              value={formData.category}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value as 'general' | 'health' | 'life' })}
+              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent"
+            >
+              <option value="general">General Insurance</option>
+              <option value="health">Health Insurance</option>
+              <option value="life">Life Insurance</option>
+            </select>
+          </div>
 
-                    <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">
-                            Company Logo
-                        </label>
-                        <div className="flex items-center gap-4">
-                            {formData.logo_url && (
-                                <div className="w-32 h-32 border border-slate-200 rounded-lg flex items-center justify-center bg-slate-50 relative group">
-                                    <img src={formData.logo_url} alt="Preview" className="max-w-full max-h-full object-contain" />
-                                    <button
-                                        type="button"
-                                        onClick={() => setFormData({ ...formData, logo_url: '' })}
-                                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-                                    >
-                                        <i className="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            )}
-                            <label className="cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
-                                <i className="fas fa-camera"></i>
-                                <span>{formData.logo_url ? 'Change Photo' : 'Upload Photo'}</span>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleImageChange}
-                                    className="hidden"
-                                />
-                            </label>
-                        </div>
-                        <p className="text-xs text-slate-400 mt-2">Recommended: PNG with transparent background</p>
-                    </div>
-
-                    <div className="flex gap-3 pt-4">
-                        <button
-                            type="submit"
-                            className="flex-1 py-3 bg-[#004aad] text-white font-bold rounded-lg hover:bg-[#003580] transition-all duration-300"
-                        >
-                            Add Company
-                        </button>
-                        <button
-                            type="button"
-                            onClick={onClose}
-                            className="px-6 py-3 border border-slate-300 text-slate-700 font-semibold rounded-lg hover:bg-slate-50 transition-all"
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </form>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">
+              Company Logo
+            </label>
+            <div className="flex items-center gap-4">
+              {formData.logo_url && (
+                <div className="w-32 h-32 border border-slate-200 rounded-lg flex items-center justify-center bg-slate-50 relative group">
+                  <img src={formData.logo_url} alt="Preview" className="max-w-full max-h-full object-contain" />
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, logo_url: '' })}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <i className="fas fa-times"></i>
+                  </button>
+                </div>
+              )}
+              <label className="cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                <i className="fas fa-camera"></i>
+                <span>{formData.logo_url ? 'Change Photo' : 'Upload Photo'}</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+              </label>
             </div>
-        </div>
-    );
+            <p className="text-xs text-slate-400 mt-2">Recommended: PNG with transparent background</p>
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <button
+              type="submit"
+              className="flex-1 py-3 bg-[#004aad] text-white font-bold rounded-lg hover:bg-[#003580] transition-all duration-300"
+            >
+              Add Company
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-6 py-3 border border-slate-300 text-slate-700 font-semibold rounded-lg hover:bg-slate-50 transition-all"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div >
+  );
 }
 
 function EditCompanyModal({ company, onClose, onSave }: { company: InsuranceCompany; onClose: () => void; onSave: () => void }) {
-    const [formData, setFormData] = useState({
-        name: company.name,
-        category: company.category,
-        is_active: company.is_active,
-        logo_url: company.logo_url || '',
-    });
+  const [formData, setFormData] = useState({
+    name: company.name,
+    category: company.category,
+    is_active: company.is_active,
+    logo_url: company.logo_url || '',
+  });
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setFormData(prev => ({ ...prev, logo_url: reader.result as string }));
-            };
-            reader.readAsDataURL(file);
-        }
-    };
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData(prev => ({ ...prev, logo_url: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        updateCompany(company.id, formData);
-        onSave();
-    };
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateCompany(company.id, formData);
+    onSave();
+  };
 
-    return (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-3xl max-w-md w-full p-8 relative">
-                <button
-                    onClick={onClose}
-                    className="absolute top-4 right-4 text-slate-400 hover:text-slate-900"
-                >
-                    <i className="fas fa-times text-2xl"></i>
-                </button>
+  return (
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-3xl max-w-md w-full p-8 relative">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-slate-400 hover:text-slate-900"
+        >
+          <i className="fas fa-times text-2xl"></i>
+        </button>
 
-                <h2 className="text-2xl font-bold text-slate-900 mb-6">Edit Company</h2>
+        <h2 className="text-2xl font-bold text-slate-900 mb-6">Edit Company</h2>
 
-                <form onSubmit={handleSubmit} className="space-y-5">
-                    <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">
-                            Company Name <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                            type="text"
-                            required
-                            value={formData.name}
-                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent"
-                        />
-                    </div>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">
+              Company Name <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              required
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent"
+            />
+          </div>
 
-                    <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">
-                            Category <span className="text-red-500">*</span>
-                        </label>
-                        <select
-                            required
-                            value={formData.category}
-                            onChange={(e) => setFormData({ ...formData, category: e.target.value as 'general' | 'health' | 'life' })}
-                            className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent"
-                        >
-                            <option value="general">General Insurance</option>
-                            <option value="health">Health Insurance</option>
-                            <option value="life">Life Insurance</option>
-                        </select>
-                    </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">
+              Category <span className="text-red-500">*</span>
+            </label>
+            <select
+              required
+              value={formData.category}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value as 'general' | 'health' | 'life' })}
+              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent"
+            >
+              <option value="general">General Insurance</option>
+              <option value="health">Health Insurance</option>
+              <option value="life">Life Insurance</option>
+            </select>
+          </div>
 
-                    <div>
-                        <label className="block text-sm font-semibold text-slate-700 mb-2">
-                            Company Logo
-                        </label>
-                        <div className="flex items-center gap-4">
-                            {formData.logo_url && (
-                                <div className="w-32 h-32 border border-slate-200 rounded-lg flex items-center justify-center bg-slate-50 relative group">
-                                    <img src={formData.logo_url} alt="Preview" className="max-w-full max-h-full object-contain" />
-                                    <button
-                                        type="button"
-                                        onClick={() => setFormData({ ...formData, logo_url: '' })}
-                                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-                                    >
-                                        <i className="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            )}
-                            <label className="cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
-                                <i className="fas fa-camera"></i>
-                                <span>{formData.logo_url ? 'Change Photo' : 'Upload Photo'}</span>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={handleImageChange}
-                                    className="hidden"
-                                />
-                            </label>
-                        </div>
-                    </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">
+              Company Logo
+            </label>
+            <div className="flex items-center gap-4">
+              {formData.logo_url && (
+                <div className="w-32 h-32 border border-slate-200 rounded-lg flex items-center justify-center bg-slate-50 relative group">
+                  <img src={formData.logo_url} alt="Preview" className="max-w-full max-h-full object-contain" />
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, logo_url: '' })}
+                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <i className="fas fa-times"></i>
+                  </button>
+                </div>
+              )}
+              <label className="cursor-pointer bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+                <i className="fas fa-camera"></i>
+                <span>{formData.logo_url ? 'Change Photo' : 'Upload Photo'}</span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+              </label>
+            </div>
+          </div>
 
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-2">Status</label>
