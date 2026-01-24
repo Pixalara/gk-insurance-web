@@ -2,7 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { Lead } from '@/app/types';
-import { getLeads, updateLead, deleteLead } from '@/app/utils/storage';
+import {
+    getLeads,
+    updateLead,
+    deleteLead
+} from '@/app/actions/lead-actions';
 import ConfirmationModal from '@/app/components/ConfirmationModal';
 
 export default function LeadsPage() {
@@ -16,23 +20,26 @@ export default function LeadsPage() {
     // Deletion state
     const [deleteId, setDeleteId] = useState<string | null>(null);
 
-    const loadLeads = () => {
-        const storedLeads = getLeads();
-        setLeads(storedLeads);
-        setLoading(false);
+    const loadLeads = async () => {
+        try {
+            setLoading(true);
+            const data = await getLeads();
+            setLeads(data);
+        } catch (error) {
+            console.error("Failed to load leads", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
-        // Load leads from localStorage
-        setTimeout(() => {
-            loadLeads();
-        }, 300);
+        loadLeads();
     }, []);
 
     const filteredLeads = leads.filter((lead) => {
         const matchesSearch = lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             lead.phone.includes(searchTerm) ||
-            lead.insurance_type.toLowerCase().includes(searchTerm.toLowerCase());
+            lead.product_type?.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesStatus = statusFilter === 'all' || lead.status === statusFilter;
         return matchesSearch && matchesStatus;
     });
@@ -47,10 +54,12 @@ export default function LeadsPage() {
         return badges[status as keyof typeof badges] || badges.new;
     };
 
-    const handleStatusChange = (leadId: string, newStatus: string) => {
-        const success = updateLead(leadId, { status: newStatus as Lead['status'] });
-        if (success) {
+    const handleStatusChange = async (leadId: string, newStatus: string) => {
+        try {
+            await updateLead(leadId, { status: newStatus as Lead['status'] });
             loadLeads();
+        } catch (error) {
+            alert('Failed to update status');
         }
     };
 
@@ -59,13 +68,15 @@ export default function LeadsPage() {
         setDeleteId(leadId);
     };
 
-    const confirmDelete = () => {
+    const confirmDelete = async () => {
         if (deleteId) {
-            const success = deleteLead(deleteId);
-            if (success) {
+            try {
+                await deleteLead(deleteId);
                 loadLeads();
+                setDeleteId(null);
+            } catch (error) {
+                alert('Failed to delete lead');
             }
-            setDeleteId(null);
         }
     };
 
@@ -74,23 +85,24 @@ export default function LeadsPage() {
         setShowEditModal(true);
     };
 
-    const handleSaveEdit = () => {
+    const handleSaveEdit = async () => {
         if (!editingLead) return;
 
-        const success = updateLead(editingLead.id, {
-            name: editingLead.name,
-            phone: editingLead.phone,
-            email: editingLead.email,
-            insurance_type: editingLead.insurance_type,
-            vehicle_number: editingLead.vehicle_number,
-            message: editingLead.message,
-            status: editingLead.status,
-        });
+        try {
+             await updateLead(editingLead.id, {
+                name: editingLead.name,
+                phone: editingLead.phone,
+                email: editingLead.email || undefined,
+                product_type: editingLead.product_type || undefined,
+                notes: editingLead.notes || undefined,
+                status: editingLead.status,
+            });
 
-        if (success) {
             loadLeads();
             setShowEditModal(false);
             setEditingLead(null);
+        } catch (error) {
+            alert('Failed to update lead');
         }
     };
 
@@ -178,7 +190,7 @@ export default function LeadsPage() {
                             <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
                             <input
                                 type="text"
-                                placeholder="Search by name, phone, or insurance type..."
+                                placeholder="Search by name, phone, or product type..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="w-full pl-12 pr-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent"
@@ -209,10 +221,7 @@ export default function LeadsPage() {
                                     Contact
                                 </th>
                                 <th className="px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
-                                    Insurance Type
-                                </th>
-                                <th className="px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
-                                    Vehicle 
+                                    Product Type
                                 </th>
                                 <th className="px-6 py-4 text-left text-xs font-bold text-slate-700 uppercase tracking-wider">
                                     Status
@@ -236,10 +245,7 @@ export default function LeadsPage() {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className="text-sm text-slate-700">{lead.insurance_type}</span>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <span className="text-sm text-slate-600">{lead.vehicle_number || '-'}</span>
+                                        <span className="text-sm text-slate-700">{lead.product_type || '-'}</span>
                                     </td>
                                     <td className="px-6 py-4">
                                         <select
@@ -361,14 +367,14 @@ export default function LeadsPage() {
                                 />
                             </div>
 
-                            {/* Insurance Type */}
+                            {/* Product Type (renamed from insurance_type and vehicle info removed as per new types) */}
                             <div>
                                 <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                    Insurance Type <span className="text-red-500">*</span>
+                                    Product Type <span className="text-red-500">*</span>
                                 </label>
                                 <select
-                                    value={editingLead.insurance_type}
-                                    onChange={(e) => setEditingLead({ ...editingLead, insurance_type: e.target.value })}
+                                    value={editingLead.product_type}
+                                    onChange={(e) => setEditingLead({ ...editingLead, product_type: e.target.value })}
                                     className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent"
                                 >
                                     <option value="Two-Wheeler Insurance">Two-Wheeler Insurance</option>
@@ -382,28 +388,14 @@ export default function LeadsPage() {
                                 </select>
                             </div>
 
-                            {/* Vehicle Number */}
+                            {/* Message/Notes */}
                             <div>
                                 <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                    Vehicle Number
-                                </label>
-                                <input
-                                    type="text"
-                                    value={editingLead.vehicle_number || ''}
-                                    onChange={(e) => setEditingLead({ ...editingLead, vehicle_number: e.target.value })}
-                                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent"
-                                    placeholder="e.g., AP 01 AB 1234"
-                                />
-                            </div>
-
-                            {/* Message */}
-                            <div>
-                                <label className="block text-sm font-semibold text-slate-700 mb-2">
-                                    Message
+                                    Notes
                                 </label>
                                 <textarea
-                                    value={editingLead.message || ''}
-                                    onChange={(e) => setEditingLead({ ...editingLead, message: e.target.value })}
+                                    value={editingLead.notes || ''}
+                                    onChange={(e) => setEditingLead({ ...editingLead, notes: e.target.value })}
                                     rows={3}
                                     className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent resize-none"
                                     placeholder="Any notes or requirements..."

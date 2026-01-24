@@ -24,11 +24,7 @@ DO $$ BEGIN
   CREATE TYPE policy_category AS ENUM (
     'general',
     'health',
-    'life',
-    'motor',
-    'travel',
-    'commercial',
-    'other'
+    'life'
   );
 EXCEPTION
   WHEN duplicate_object THEN NULL;

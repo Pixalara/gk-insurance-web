@@ -2,8 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { InsuranceCompany } from '@/app/types';
-import { getCompanies, saveCompany, updateCompany, deleteCompany, initializeCompanies } from '@/app/utils/storage';
+import {
+    getCompanies,
+    createCompany,
+    updateCompany,
+    deleteCompany
+} from '@/app/actions/company-actions';
 import ConfirmationModal from '@/app/components/ConfirmationModal';
+import Image from 'next/image';
 
 export default function CompaniesPage() {
   const [companies, setCompanies] = useState<InsuranceCompany[]>([]);
@@ -15,11 +21,16 @@ export default function CompaniesPage() {
 
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
-  const loadCompanies = () => {
-    initializeCompanies(); // Initialize with mock data if empty
-    const storedCompanies = getCompanies();
-    setCompanies(storedCompanies);
-    setLoading(false);
+  const loadCompanies = async () => {
+    try {
+        setLoading(true);
+        const data = await getCompanies();
+        setCompanies(data);
+    } catch (error) {
+        console.error("Failed to load companies", error);
+    } finally {
+        setLoading(false);
+    }
   };
 
   const LOGO_MAP: Record<string, string> = {
@@ -52,6 +63,7 @@ export default function CompaniesPage() {
         loadCompanies();
       } catch (error) {
         console.error('Error toggling active status:', error);
+        alert('Failed to update status');
       }
     }
   };
@@ -65,21 +77,25 @@ export default function CompaniesPage() {
     setDeleteId(id);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (deleteId) {
-      deleteCompany(deleteId);
-      loadCompanies();
-      setDeleteId(null);
+      try {
+        await deleteCompany(deleteId);
+        loadCompanies();
+        setDeleteId(null);
+      } catch (error) {
+          alert('Failed to delete company: ' + (error as Error).message);
+      }
     }
   };
 
   const getCategoryBadge = (category: string) => {
-    const badges = {
+    const badges: Record<string, string> = {
       general: 'bg-blue-100 text-blue-700',
       health: 'bg-green-100 text-green-700',
       life: 'bg-purple-100 text-purple-700',
     };
-    return badges[category as keyof typeof badges];
+    return badges[category] || 'bg-slate-100 text-slate-700';
   };
 
   if (loading) {
@@ -189,7 +205,7 @@ export default function CompaniesPage() {
               {/* Company Logo Placeholder */}
               <div className="w-full h-40 bg-white rounded-lg flex items-center justify-center mb-4 p-4 overflow-hidden relative">
                 {logoSrc ? (
-                  <img
+                  <Image
                     src={logoSrc}
                     alt={company.name}
                     className="max-w-full max-h-full object-contain"
@@ -284,11 +300,17 @@ export default function CompaniesPage() {
 }
 
 function AddCompanyModal({ onClose, onAdd }: { onClose: () => void; onAdd: () => void }) {
-  const [formData, setFormData] = useState({
-    name: '',
-    category: 'general' as 'general' | 'health' | 'life',
-    logo_url: '',
-  });
+  const [formData, setFormData] = useState<{
+  name: string;
+  category: InsuranceCompany['category'];
+  logo_url: string;
+}>({
+  name: '',
+  category: 'general',
+  logo_url: '',
+});
+
+  const [loading, setLoading] = useState(false);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -301,15 +323,21 @@ function AddCompanyModal({ onClose, onAdd }: { onClose: () => void; onAdd: () =>
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    saveCompany({
-      name: formData.name,
-      category: formData.category,
-      is_active: true,
-      logo_url: formData.logo_url,
-    });
-    onAdd();
+    setLoading(true);
+    try {
+        await createCompany({
+          name: formData.name,
+          category: formData.category,
+          logo_url: formData.logo_url || undefined,
+        });
+        onAdd();
+    } catch (error) {
+        alert('Failed to create company: ' + (error as Error).message);
+    } finally {
+        setLoading(false);
+    }
   };
 
   return (
@@ -348,7 +376,7 @@ function AddCompanyModal({ onClose, onAdd }: { onClose: () => void; onAdd: () =>
             <select
               required
               value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value as 'general' | 'health' | 'life' })}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value as InsuranceCompany['category'] })}
               className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent"
             >
               <option value="general">General Insurance</option>
@@ -364,7 +392,7 @@ function AddCompanyModal({ onClose, onAdd }: { onClose: () => void; onAdd: () =>
             <div className="flex items-center gap-4">
               {formData.logo_url && (
                 <div className="w-32 h-32 border border-slate-200 rounded-lg flex items-center justify-center bg-slate-50 relative group">
-                  <img src={formData.logo_url} alt="Preview" className="max-w-full max-h-full object-contain" />
+                  <Image src={formData.logo_url} alt="Preview" className="max-w-full max-h-full object-contain" />
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, logo_url: '' })}
@@ -391,9 +419,10 @@ function AddCompanyModal({ onClose, onAdd }: { onClose: () => void; onAdd: () =>
           <div className="flex gap-3 pt-4">
             <button
               type="submit"
-              className="flex-1 py-3 bg-[#004aad] text-white font-bold rounded-lg hover:bg-[#003580] transition-all duration-300"
+              disabled={loading}
+              className="flex-1 py-3 bg-[#004aad] text-white font-bold rounded-lg hover:bg-[#003580] transition-all duration-300 disabled:opacity-50"
             >
-              Add Company
+              {loading ? 'Adding...' : 'Add Company'}
             </button>
             <button
               type="button"
@@ -416,6 +445,7 @@ function EditCompanyModal({ company, onClose, onSave }: { company: InsuranceComp
     is_active: company.is_active,
     logo_url: company.logo_url || '',
   });
+  const [loading, setLoading] = useState(false);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -428,10 +458,17 @@ function EditCompanyModal({ company, onClose, onSave }: { company: InsuranceComp
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    updateCompany(company.id, formData);
-    onSave();
+    setLoading(true);
+    try {
+        await updateCompany(company.id, formData);
+        onSave();
+    } catch (error) {
+        alert('Failed to update company: ' + (error as Error).message);
+    } finally {
+        setLoading(false);
+    }
   };
 
   return (
@@ -467,12 +504,16 @@ function EditCompanyModal({ company, onClose, onSave }: { company: InsuranceComp
             <select
               required
               value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value as 'general' | 'health' | 'life' })}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value as InsuranceCompany['category'] })}
               className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] focus:border-transparent"
             >
               <option value="general">General Insurance</option>
               <option value="health">Health Insurance</option>
               <option value="life">Life Insurance</option>
+              <option value="motor">Motor Insurance</option>
+              <option value="travel">Travel Insurance</option>
+              <option value="commercial">Commercial Insurance</option>
+              <option value="other">Other</option>
             </select>
           </div>
 
@@ -483,7 +524,7 @@ function EditCompanyModal({ company, onClose, onSave }: { company: InsuranceComp
             <div className="flex items-center gap-4">
               {formData.logo_url && (
                 <div className="w-32 h-32 border border-slate-200 rounded-lg flex items-center justify-center bg-slate-50 relative group">
-                  <img src={formData.logo_url} alt="Preview" className="max-w-full max-h-full object-contain" />
+                  <Image src={formData.logo_url} alt="Preview" className="max-w-full max-h-full object-contain" />
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, logo_url: '' })}
@@ -533,7 +574,8 @@ function EditCompanyModal({ company, onClose, onSave }: { company: InsuranceComp
           <div className="flex gap-3 pt-4">
             <button
               type="submit"
-              className="flex-1 py-3 bg-[#004aad] text-white font-bold rounded-lg hover:bg-[#003580] transition-all duration-300"
+              disabled={loading}
+              className="flex-1 py-3 bg-[#004aad] text-white font-bold rounded-lg hover:bg-[#003580] transition-all duration-300 disabled:opacity-50"
             >
               {company ? 'Save Changes' : 'Add Company'}
             </button>
