@@ -16,6 +16,7 @@ import {
 } from '@/app/actions/policy-actions';
 import { getCompanies } from '@/app/actions/company-actions';
 import ConfirmationModal from '@/app/components/ConfirmationModal';
+import Modal from '@/app/components/Modal';
 
 type CustomerWithCounts = Customer & { policies_count: number; active_policies: number };
 
@@ -314,8 +315,8 @@ function AddCustomerModal({ onClose, onAdd }: { onClose: () => void; onAdd: () =
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-8 relative">
+        <Modal onClose={onClose} className="max-w-2xl">
+            <div className="p-8 relative">
                 <button
                     onClick={onClose}
                     className="absolute top-4 right-4 text-slate-400 hover:text-slate-900"
@@ -411,7 +412,7 @@ function AddCustomerModal({ onClose, onAdd }: { onClose: () => void; onAdd: () =
                     </div>
                 </form>
             </div>
-        </div>
+        </Modal>
     );
 }
 
@@ -447,8 +448,8 @@ function EditCustomerModal({ customer, onClose, onSave }: { customer: Customer; 
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-0 relative flex flex-col">
+        <Modal onClose={onClose} className="max-w-4xl p-0 overflow-hidden flex flex-col">
+            <div className="flex flex-col">
                 {/* Modal Header */}
                 <div className="p-6 border-b border-slate-200 flex justify-between items-center sticky top-0 bg-white z-10">
                     <div>
@@ -461,7 +462,7 @@ function EditCustomerModal({ customer, onClose, onSave }: { customer: Customer; 
                 </div>
 
                 {/* Tabs */}
-                <div className="flex border-b border-slate-200 px-6">
+                <div className="flex border-b border-slate-200 px-6 bg-white">
                     <button
                         onClick={() => setActiveTab('details')}
                         className={`px-6 py-4 font-bold text-sm border-b-2 transition-colors ${activeTab === 'details'
@@ -544,7 +545,7 @@ function EditCustomerModal({ customer, onClose, onSave }: { customer: Customer; 
                     )}
                 </div>
             </div>
-        </div>
+        </Modal>
     );
 }
 
