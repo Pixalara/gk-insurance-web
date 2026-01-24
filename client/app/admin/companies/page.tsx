@@ -208,7 +208,9 @@ export default function CompaniesPage() {
                   <Image
                     src={logoSrc}
                     alt={company.name}
-                    className="max-w-full max-h-full object-contain"
+                    width={150}    
+  height={150}   
+  className="object-contain"
                   />
                 ) : (
                   <i className="fas fa-building text-3xl text-slate-300"></i>
