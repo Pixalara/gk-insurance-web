@@ -3,7 +3,7 @@
 export default function WhatsAppButton() {
     const handleClick = () => {
         const message = encodeURIComponent('Hi GK Insurance, I need help with insurance quotes');
-        const phone = '919573322990';
+        const phone = '91957332990';
         window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
     };
 

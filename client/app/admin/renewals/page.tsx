@@ -230,7 +230,7 @@ export default function RenewalsPage() {
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 ">
-                                        <span className={`px-3 py-1 rounded-md text-xs font-semibold border ${getUrgencyColor(policy.days_remaining)}`}>
+                                        <span className={`inline-flex items-center whitespace-nowrap px-3 py-1  rounded-md text-xs font-semibold border ${getUrgencyColor(policy.days_remaining)}`}>
                                             {policy.days_remaining < 0
                                                 ? `Expired ${Math.abs(policy.days_remaining)}d ago`
                                                 : `${policy.days_remaining} days left`}
