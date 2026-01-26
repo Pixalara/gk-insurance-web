@@ -141,22 +141,28 @@ export default function HomePage() {
       </section>
 
       {/* Partner Logos Slider */}
-      <section className="py-12 bg-white border-y border-slate-200">
+      <section className="py-12 bg-white border-y border-slate-200  ">
         <div className="container-custom">
-          <p className="text-center text-sm font-semibold text-slate-500 uppercase tracking-wide mb-6">
+          <p className="text-center text-sm font-semibold text-slate-600 uppercase tracking-wide mb-6">
             Trusted Insurance Partners
           </p>
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
-            {[...insurancePartners.general, ...insurancePartners.health, ...insurancePartners.life]
-              .slice(0, 6)
-              .map((partner, idx) => (
-                <div
-                  key={idx}
-                  className="h-16 w-32  rounded-lg flex items-center p-3 justify-center text-slate-500 text-xs font-semibold"
-                >
-                  <img src={partner.logo} alt={partner.name} className="w-auto h-auto" />
-                </div>
-              ))}
+          <div className="relative overflow-hidden w-full ">
+            <div className="flex w-max animate-scroll gap-12 hover:pause">
+              {[...insurancePartners.general, ...insurancePartners.health, ...insurancePartners.life, ...insurancePartners.general, ...insurancePartners.health, ...insurancePartners.life].map(
+                (partner, idx) => (
+                  <div
+                    key={idx}
+                    className="h-20 min-w-[120px] rounded-lg flex items-center justify-center p-4 bg-white "
+                  >
+                    <img
+                      src={partner.logo}
+                      alt={partner.name}
+                      className="w-full h-full object-contain transition-all duration-300"
+                    />
+                  </div>
+                )
+              )}
+            </div>
           </div>
         </div>
       </section>
@@ -267,9 +273,9 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             {[
-              { icon: 'fa-map-marker-alt', title: 'Location', info: 'Visakhapatnam, AP' },
-              { icon: 'fa-phone', title: 'Phone', info: '+91 XXXXX XXXXX' },
-              { icon: 'fa-envelope', title: 'Email', info: 'info@gkinsurance.com' },
+              { icon: 'fa-map-marker-alt', title: 'Location', info: 'Peejay Plaza, # 10-1-44/9, 3rd Floor, VIP Road, CBM Compound, Visakhapatnam - 530 003' },
+              { icon: 'fa-phone', title: 'Phone', info: '+91 90524 33444' },
+              { icon: 'fa-envelope', title: 'Email', info: 'gkinsurance1478@gmail.com' },
             ].map((item, idx) => (
               <div key={idx} className="text-center p-6 bg-white rounded-xl shadow-sm">
                 <i className={`fas ${item.icon} text-3xl text-[#004aad] mb-4`}></i>
@@ -285,13 +291,13 @@ export default function HomePage() {
 
       {/* Quote Modal */}
       {showQuoteModal && (
-        <div className="fixed inset-0 bg-black/50 z-100 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-8 relative">
+        <div className="fixed inset-0 bg-black/60 z-100 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl max-w-lg w-full max-h-[85dvh] overflow-y-auto p-4 md:p-8 relative shadow-2xl">
             <button
               onClick={() => setShowQuoteModal(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-900"
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-900 w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 transition-colors"
             >
-              <i className="fas fa-times text-2xl"></i>
+              <i className="fas fa-times text-xl"></i>
             </button>
             <QuoteForm
               productType={selectedProduct || undefined}

@@ -63,15 +63,15 @@ export default function Footer() {
                         <ul className="space-y-3">
                             <li className="flex items-start gap-2 text-sm text-slate-600">
                                 <i className="fas fa-map-marker-alt text-[#004aad] mt-1"></i>
-                                <span>Visakhapatnam, Andhra Pradesh</span>
+                                <span>Peejay Plaza, # 10-1-44/9, 3rd Floor, VIP Road, CBM Compound, Visakhapatnam - 530 003</span>
                             </li>
                             <li className="flex items-start gap-2 text-sm text-slate-600">
                                 <i className="fas fa-phone text-[#004aad] mt-1"></i>
-                                <span>+91 XXXXX XXXXX</span>
+                                <span>+91 90524 33444</span>
                             </li>
                             <li className="flex items-start gap-2 text-sm text-slate-600">
                                 <i className="fas fa-envelope text-[#004aad] mt-1"></i>
-                                <span>info@gkinsurance.com</span>
+                                <span>gkinsurance1478@gmail.com</span>
                             </li>
                         </ul>
                     </div>

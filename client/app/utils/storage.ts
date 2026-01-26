@@ -1,6 +1,8 @@
 // localStorage utilities for managing leads, customers, and companies data
 // This will be replaced with Supabase API calls later
 
+
+
 import { Lead, Customer, InsuranceCompany, Policy } from '@/app/types';
 
 const LEADS_STORAGE_KEY = 'gk_leads';
