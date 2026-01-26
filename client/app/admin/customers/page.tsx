@@ -4,18 +4,19 @@ import { useState, useEffect } from 'react';
 import { Customer, Policy, InsuranceCompany } from '@/app/types';
 import {
     getCustomers,
-    saveCustomer,
+    createCustomer,
     updateCustomer,
-    deleteCustomer,
-    initializeCustomers,
+    deleteCustomer
+} from '@/app/actions/customer-actions';
+import {
     getPolicies,
-    savePolicy,
-    deletePolicy,
-    getCompanies,
-    initializeCompanies,
-    initializePolicies
-} from '@/app/utils/storage';
+    getPoliciesByCustomer,
+    createPolicy,
+    deletePolicy
+} from '@/app/actions/policy-actions';
+import { getCompanies } from '@/app/actions/company-actions';
 import ConfirmationModal from '@/app/components/ConfirmationModal';
+import Modal from '@/app/components/Modal';
 
 type CustomerWithCounts = Customer & { policies_count: number; active_policies: number };
 
@@ -30,34 +31,37 @@ export default function CustomersPage() {
     // Delete state
     const [deleteId, setDeleteId] = useState<string | null>(null);
 
-    const loadData = () => {
-        initializeCustomers();
-        initializeCompanies();
-        initializePolicies();
+    const loadData = async () => {
+        try {
+            setLoading(true);
+            const [fetchedCustomers, fetchedPolicies] = await Promise.all([
+                getCustomers(),
+                getPolicies()
+            ]);
 
-        const storedCustomers = getCustomers();
-        const storedPolicies = getPolicies();
+            // Calculate real stats
+            const customersWithCounts: CustomerWithCounts[] = fetchedCustomers.map((customer) => {
+                const customerPolicies = fetchedPolicies.filter(p => p.customer_id === customer.id);
+                const activePolicies = customerPolicies.filter(p => p.status === 'active');
 
-        // Calculate real stats
-        const customersWithCounts: CustomerWithCounts[] = storedCustomers.map((customer) => {
-            const customerPolicies = storedPolicies.filter(p => p.customer_id === customer.id);
-            const activePolicies = customerPolicies.filter(p => p.status === 'active');
+                return {
+                    ...customer,
+                    policies_count: customerPolicies.length,
+                    active_policies: activePolicies.length,
+                };
+            });
 
-            return {
-                ...customer,
-                policies_count: customerPolicies.length,
-                active_policies: activePolicies.length,
-            };
-        });
-
-        setCustomers(customersWithCounts);
-        setLoading(false);
+            setCustomers(customersWithCounts);
+        } catch (error) {
+            console.error("Failed to load customers", error);
+            // Optionally set error state here
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
-        setTimeout(() => {
-            loadData();
-        }, 300);
+        loadData();
     }, []);
 
     const filteredCustomers = customers.filter((customer) =>
@@ -75,11 +79,15 @@ export default function CustomersPage() {
         setDeleteId(id);
     };
 
-    const confirmDelete = () => {
+    const confirmDelete = async () => {
         if (deleteId) {
-            deleteCustomer(deleteId);
-            loadData();
-            setDeleteId(null);
+            try {
+                await deleteCustomer(deleteId);
+                loadData();
+                setDeleteId(null);
+            } catch (error) {
+                alert("Failed to delete customer");
+            }
         }
     };
 
@@ -285,22 +293,30 @@ function AddCustomerModal({ onClose, onAdd }: { onClose: () => void; onAdd: () =
         address: '',
         notes: '',
     });
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        saveCustomer({
-            name: formData.name,
-            phone: formData.phone,
-            email: formData.email || undefined,
-            address: formData.address || undefined,
-            notes: formData.notes || undefined,
-        });
-        onAdd();
+        setLoading(true);
+        try {
+            await createCustomer({
+                name: formData.name,
+                phone: formData.phone,
+                email: formData.email || undefined,
+                address: formData.address || undefined,
+                notes: formData.notes || undefined,
+            });
+            onAdd();
+        } catch (error) {
+            alert('Failed to create customer: ' + (error as Error).message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-8 relative">
+        <Modal onClose={onClose} className="max-w-2xl">
+            <div className="p-8 relative">
                 <button
                     onClick={onClose}
                     className="absolute top-4 right-4 text-slate-400 hover:text-slate-900"
@@ -381,9 +397,10 @@ function AddCustomerModal({ onClose, onAdd }: { onClose: () => void; onAdd: () =
                     <div className="flex gap-3">
                         <button
                             type="submit"
-                            className="flex-1 py-3 bg-[#004aad] text-white font-bold rounded-lg hover:bg-[#003580] transition-all duration-300"
+                            disabled={loading}
+                            className="flex-1 py-3 bg-[#004aad] text-white font-bold rounded-lg hover:bg-[#003580] transition-all duration-300 disabled:opacity-50"
                         >
-                            Add Customer
+                            {loading ? 'Adding...' : 'Add Customer'}
                         </button>
                         <button
                             type="button"
@@ -395,7 +412,7 @@ function AddCustomerModal({ onClose, onAdd }: { onClose: () => void; onAdd: () =
                     </div>
                 </form>
             </div>
-        </div>
+        </Modal>
     );
 }
 
@@ -408,23 +425,31 @@ function EditCustomerModal({ customer, onClose, onSave }: { customer: Customer; 
         address: customer.address || '',
         notes: customer.notes || '',
     });
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        updateCustomer(customer.id, {
-            name: formData.name,
-            phone: formData.phone,
-            email: formData.email || undefined,
-            address: formData.address || undefined,
-            notes: formData.notes || undefined,
-        });
-        onSave();
-        onClose();
+        setLoading(true);
+        try {
+            await updateCustomer(customer.id, {
+                name: formData.name,
+                phone: formData.phone,
+                email: formData.email || undefined,
+                address: formData.address || undefined,
+                notes: formData.notes || undefined,
+            });
+            onSave();
+            onClose();
+        } catch (error) {
+            alert('Failed to update customer');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto p-0 relative flex flex-col">
+        <Modal onClose={onClose} className="max-w-4xl p-0 overflow-hidden flex flex-col">
+            <div className="flex flex-col">
                 {/* Modal Header */}
                 <div className="p-6 border-b border-slate-200 flex justify-between items-center sticky top-0 bg-white z-10">
                     <div>
@@ -437,7 +462,7 @@ function EditCustomerModal({ customer, onClose, onSave }: { customer: Customer; 
                 </div>
 
                 {/* Tabs */}
-                <div className="flex border-b border-slate-200 px-6">
+                <div className="flex border-b border-slate-200 px-6 bg-white">
                     <button
                         onClick={() => setActiveTab('details')}
                         className={`px-6 py-4 font-bold text-sm border-b-2 transition-colors ${activeTab === 'details'
@@ -511,8 +536,8 @@ function EditCustomerModal({ customer, onClose, onSave }: { customer: Customer; 
                                     className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#004aad] resize-none"
                                 />
                             </div>
-                            <button type="submit" className="px-6 py-3 bg-[#004aad] text-white font-bold rounded-lg hover:bg-[#003580] transition-colors">
-                                Save Details
+                            <button type="submit" disabled={loading} className="px-6 py-3 bg-[#004aad] text-white font-bold rounded-lg hover:bg-[#003580] transition-colors disabled:opacity-50">
+                                {loading ? 'Saving...' : 'Save Details'}
                             </button>
                         </form>
                     ) : (
@@ -520,7 +545,7 @@ function EditCustomerModal({ customer, onClose, onSave }: { customer: Customer; 
                     )}
                 </div>
             </div>
-        </div>
+        </Modal>
     );
 }
 
@@ -528,6 +553,7 @@ function CustomerPoliciesManager({ customer, onUpdate }: { customer: Customer; o
     const [policies, setPolicies] = useState<Policy[]>([]);
     const [companies, setCompanies] = useState<InsuranceCompany[]>([]);
     const [showAddForm, setShowAddForm] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     // Policy Delete State
     const [deletePolicyId, setDeletePolicyId] = useState<string | null>(null);
@@ -536,27 +562,39 @@ function CustomerPoliciesManager({ customer, onUpdate }: { customer: Customer; o
         loadData();
     }, [customer.id]);
 
-    const loadData = () => {
-        const allPolicies = getPolicies();
-        const allCompanies = getCompanies();
-        setPolicies(allPolicies.filter(p => p.customer_id === customer.id));
-        setCompanies(allCompanies);
+    const loadData = async () => {
+        try {
+            setLoading(true);
+            const [fetchedPolicies, fetchedCompanies] = await Promise.all([
+                getPoliciesByCustomer(customer.id),
+                getCompanies()
+            ]);
+            setPolicies(fetchedPolicies);
+            setCompanies(fetchedCompanies);
+        } catch (error) {
+            console.error("Failed to load policy data", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleDeletePolicyClick = (id: string) => {
         setDeletePolicyId(id);
     };
 
-    const confirmDeletePolicy = () => {
+    const confirmDeletePolicy = async () => {
         if (deletePolicyId) {
-            deletePolicy(deletePolicyId);
-            loadData();
-            onUpdate(); // Update customer stats
-            setDeletePolicyId(null);
+            try {
+                await deletePolicy(deletePolicyId);
+                await loadData();
+                onUpdate(); // Update customer stats
+                setDeletePolicyId(null);
+            } catch (error) {
+                alert("Failed to delete policy");
+            }
         }
     };
 
-    // Need a separate component for adding policies to keep clean
     return (
         <div>
             <div className="flex justify-between items-center mb-6">
@@ -585,50 +623,55 @@ function CustomerPoliciesManager({ customer, onUpdate }: { customer: Customer; o
                 </div>
             )}
 
-            <div className="space-y-4">
-                {policies.length === 0 ? (
-                    <div className="text-center py-8 text-slate-500 bg-slate-50 rounded-xl border border-slate-100">
-                        No policies found for this customer.
-                    </div>
-                ) : (
-                    policies.map(policy => {
-                        const company = companies.find(c => c.id === policy.insurance_company_id);
-                        return (
-                            <div key={policy.id} className="p-4 border border-slate-200 rounded-xl hover:border-blue-300 transition-colors bg-white group">
-                                <div className="flex justify-between items-start">
-                                    <div>
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <span className="font-bold text-slate-900">{company?.name || 'Unknown Company'}</span>
-                                            <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs rounded-full uppercase font-medium">
-                                                {policy.product_type_id}
+            {loading ? (
+                 <div className="text-center py-8"><i className="fas fa-spinner fa-spin"></i> Loading policies...</div>
+            ) : (
+                <div className="space-y-4">
+                    {policies.length === 0 ? (
+                        <div className="text-center py-8 text-slate-500 bg-slate-50 rounded-xl border border-slate-100">
+                            No policies found for this customer.
+                        </div>
+                    ) : (
+                        policies.map(policy => {
+                            // Policy now has insurance_company joined
+                            const companyName = policy.insurance_company?.name || 'Unknown Company';
+                            return (
+                                <div key={policy.id} className="p-4 border border-slate-200 rounded-xl hover:border-blue-300 transition-colors bg-white group">
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <span className="font-bold text-slate-900">{companyName}</span>
+                                                <span className="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs rounded-full uppercase font-medium">
+                                                    {policy.product_type}
+                                                </span>
+                                            </div>
+                                            <p className="text-sm text-slate-600 mb-2">Policy No: <span className="font-mono text-slate-800">{policy.policy_number}</span></p>
+                                            <div className="flex gap-4 text-xs text-slate-500">
+                                                <span>Start: {new Date(policy.policy_start_date).toLocaleDateString()}</span>
+                                                <span>End: {new Date(policy.policy_end_date).toLocaleDateString()}</span>
+                                            </div>
+                                        </div>
+                                        <div className="text-right flex flex-col items-end gap-2">
+                                            <p className="text-lg font-black text-[#004aad]">₹{policy.premium_amount.toLocaleString()}</p>
+                                            <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold uppercase ${policy.status === 'active' ? 'bg-green-100 text-green-700' :
+                                                policy.status === 'expired' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-700'
+                                                }`}>
+                                                {policy.status}
                                             </span>
+                                            <button
+                                                onClick={() => handleDeletePolicyClick(policy.id)}
+                                                className="text-red-500 hover:text-red-700 text-xs mt-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                <i className="fas fa-trash mr-1"></i> Delete
+                                            </button>
                                         </div>
-                                        <p className="text-sm text-slate-600 mb-2">Policy No: <span className="font-mono text-slate-800">{policy.policy_number}</span></p>
-                                        <div className="flex gap-4 text-xs text-slate-500">
-                                            <span>Start: {new Date(policy.policy_start_date).toLocaleDateString()}</span>
-                                            <span>End: {new Date(policy.policy_end_date).toLocaleDateString()}</span>
-                                        </div>
-                                    </div>
-                                    <div className="text-right flex flex-col items-end gap-2">
-                                        <p className="text-lg font-black text-[#004aad]">₹{policy.premium_amount.toLocaleString()}</p>
-                                        <span className={`inline-block px-2 py-0.5 rounded text-xs font-bold uppercase ${policy.status === 'active' ? 'bg-green-100 text-green-700' :
-                                            policy.status === 'expired' ? 'bg-red-100 text-red-700' : 'bg-slate-100 text-slate-700'
-                                            }`}>
-                                            {policy.status}
-                                        </span>
-                                        <button
-                                            onClick={() => handleDeletePolicyClick(policy.id)}
-                                            className="text-red-500 hover:text-red-700 text-xs mt-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                        >
-                                            <i className="fas fa-trash mr-1"></i> Delete
-                                        </button>
                                     </div>
                                 </div>
-                            </div>
-                        );
-                    })
-                )}
-            </div>
+                            );
+                        })
+                    )}
+                </div>
+            )}
 
             {/* Policy Delete Confirmation */}
             <ConfirmationModal
@@ -645,7 +688,7 @@ function CustomerPoliciesManager({ customer, onUpdate }: { customer: Customer; o
 function AddPolicyForm({ customerId, companies, onCancel, onSuccess }: { customerId: string; companies: InsuranceCompany[]; onCancel: () => void; onSuccess: () => void }) {
     const [formData, setFormData] = useState({
         insurance_company_id: '',
-        product_type_id: 'car',
+        product_type: 'car',
         policy_number: '',
         premium_amount: '',
         start_date: new Date().toISOString().split('T')[0],
@@ -653,21 +696,28 @@ function AddPolicyForm({ customerId, companies, onCancel, onSuccess }: { custome
         vehicle_number: '',
         status: 'active' as const,
     });
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        savePolicy({
-            customer_id: customerId,
-            insurance_company_id: formData.insurance_company_id,
-            product_type_id: formData.product_type_id,
-            policy_number: formData.policy_number,
-            policy_start_date: new Date(formData.start_date).toISOString(),
-            policy_end_date: new Date(formData.end_date).toISOString(),
-            premium_amount: Number(formData.premium_amount),
-            status: formData.status,
-            vehicle_number: formData.vehicle_number || undefined,
-        });
-        onSuccess();
+        setLoading(true);
+        try {
+            await createPolicy({
+                insurance_company_id: formData.insurance_company_id,
+                product_type: formData.product_type,
+                policy_number: formData.policy_number,
+                policy_start_date: new Date(formData.start_date).toISOString(),
+                policy_end_date: new Date(formData.end_date).toISOString(),
+                premium_amount: Number(formData.premium_amount),
+                status: formData.status,
+                vehicle_number: formData.vehicle_number || undefined,
+            }, customerId);
+            onSuccess();
+        } catch (error) {
+            alert('Failed to create policy: ' + (error as Error).message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -691,8 +741,8 @@ function AddPolicyForm({ customerId, companies, onCancel, onSuccess }: { custome
                     <label className="block text-xs font-bold text-slate-700 mb-1">Product Type <span className="text-red-500">*</span></label>
                     <select
                         required
-                        value={formData.product_type_id}
-                        onChange={(e) => setFormData({ ...formData, product_type_id: e.target.value })}
+                        value={formData.product_type}
+                        onChange={(e) => setFormData({ ...formData, product_type: e.target.value })}
                         className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#004aad]"
                     >
                         <option value="car">Car Insurance</option>
@@ -762,11 +812,14 @@ function AddPolicyForm({ customerId, companies, onCancel, onSuccess }: { custome
                 </button>
                 <button
                     type="submit"
-                    className="px-4 py-2 bg-[#004aad] text-white text-sm font-bold rounded-lg hover:bg-[#003580] transition-colors"
+                    disabled={loading}
+                    className="px-4 py-2 bg-[#004aad] text-white text-sm font-bold rounded-lg hover:bg-[#003580] transition-colors disabled:opacity-50"
                 >
-                    Create Policy
+                    {loading ? 'Creating...' : 'Create Policy'}
                 </button>
             </div>
         </form>
     );
 }
+
+

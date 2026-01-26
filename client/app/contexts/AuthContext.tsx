@@ -21,29 +21,31 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [admin, setAdmin] = useState<Admin | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [mounted, setMounted] = useState(false);
     const router = useRouter();
     const pathname = usePathname();
 
     useEffect(() => {
-        setMounted(true);
-        // Check if user is logged in on mount
-        const storedAdmin = localStorage.getItem('gk_admin');
-        if (storedAdmin) {
-            setAdmin(JSON.parse(storedAdmin));
-        }
-        setIsLoading(false);
+        const initAuth = setTimeout(() => {
+            // Check if user is logged in on mount
+            const storedAdmin = localStorage.getItem('gk_admin');
+            if (storedAdmin) {
+                setAdmin(JSON.parse(storedAdmin));
+            }
+            setIsLoading(false);
+        }, 0);
+
+        return () => clearTimeout(initAuth);
     }, []);
 
     useEffect(() => {
         // Protect admin routes
-        if (!isLoading && mounted) {
+        if (!isLoading) {
             const isAdminRoute = pathname?.startsWith('/admin') && pathname !== '/admin/login' && pathname !== '/admin/signup';
             if (isAdminRoute && !admin) {
                 router.push('/admin/login');
             }
         }
-    }, [admin, pathname, isLoading, mounted, router]);
+    }, [admin, pathname, isLoading, router]);
 
     const signup = (email: string, password: string, name: string): boolean => {
         // Get existing admins

@@ -24,11 +24,7 @@ DO $$ BEGIN
   CREATE TYPE policy_category AS ENUM (
     'general',
     'health',
-    'life',
-    'motor',
-    'travel',
-    'commercial',
-    'other'
+    'life'
   );
 EXCEPTION
   WHEN duplicate_object THEN NULL;
@@ -93,7 +89,7 @@ CREATE TABLE IF NOT EXISTS policies (
     REFERENCES insurance_companies(id)
     ON DELETE RESTRICT,
 
-  product_type_id TEXT NOT NULL,
+  product_type TEXT NOT NULL,
   policy_number TEXT NOT NULL UNIQUE,
 
   policy_start_date DATE NOT NULL,
@@ -126,7 +122,7 @@ CREATE INDEX IF NOT EXISTS idx_customers_phone
   ON customers(phone);
 
 -- ===============================
--- AUTO-UPDATE updated_at
+-- AUTO-UPDATE updated_at (DEV SAFE)
 -- ===============================
 
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -137,17 +133,57 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER trg_update_leads_updated_at
-BEFORE UPDATE ON leads
-FOR EACH ROW
-EXECUTE FUNCTION update_updated_at_column();
+-- Only create triggers if they do NOT already exist
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_trigger WHERE tgname = 'trg_update_leads_updated_at'
+  ) THEN
+    CREATE TRIGGER trg_update_leads_updated_at
+    BEFORE UPDATE ON leads
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+  END IF;
 
-CREATE TRIGGER trg_update_customers_updated_at
-BEFORE UPDATE ON customers
-FOR EACH ROW
-EXECUTE FUNCTION update_updated_at_column();
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_trigger WHERE tgname = 'trg_update_customers_updated_at'
+  ) THEN
+    CREATE TRIGGER trg_update_customers_updated_at
+    BEFORE UPDATE ON customers
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+  END IF;
 
-CREATE TRIGGER trg_update_policies_updated_at
-BEFORE UPDATE ON policies
-FOR EACH ROW
-EXECUTE FUNCTION update_updated_at_column();
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_trigger WHERE tgname = 'trg_update_policies_updated_at'
+  ) THEN
+    CREATE TRIGGER trg_update_policies_updated_at
+    BEFORE UPDATE ON policies
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+  END IF;
+END $$;
+
+-- ===============================
+-- RLS (DEV MODE)
+-- ===============================
+
+ALTER TABLE customers ENABLE ROW LEVEL SECURITY;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_policies
+    WHERE schemaname = 'public'
+      AND tablename = 'customers'
+      AND policyname = 'allow_all_customers'
+  ) THEN
+    CREATE POLICY allow_all_customers
+    ON customers
+    FOR ALL
+    USING (true)
+    WITH CHECK (true);
+  END IF;
+END $$;
+

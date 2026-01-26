@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Policy, Customer, InsuranceCompany } from '@/app/types';
-import { getPolicies, getCustomers, getCompanies, initializePolicies } from '@/app/utils/storage';
+import { Policy } from '@/app/types';
+import { getPolicies, updatePolicy } from '@/app/actions/policy-actions';
+import { getCustomers } from '@/app/actions/customer-actions';
+import { getCompanies } from '@/app/actions/company-actions';
 
 interface PolicyWithDetails extends Policy {
     customer_name: string;
@@ -15,51 +17,57 @@ export default function RenewalsPage() {
     const [policies, setPolicies] = useState<PolicyWithDetails[]>([]);
     const [loading, setLoading] = useState(true);
     const [filterRange, setFilterRange] = useState<'expired' | 'week' | 'month' | 'twomonths'>('week');
+    const [renewingId, setRenewingId] = useState<string | null>(null);
 
     useEffect(() => {
         loadData();
     }, []);
 
-    const loadData = () => {
-        initializePolicies(); // Ensure data exists
+    const loadData = async () => {
+        try {
+            const [storedPolicies, storedCustomers, storedCompanies] = await Promise.all([
+                getPolicies(),
+                getCustomers(),
+                getCompanies()
+            ]);
 
-        const storedPolicies = getPolicies();
-        const storedCustomers = getCustomers();
-        const storedCompanies = getCompanies();
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Normalize today to start of day
 
-        const today = new Date();
-        today.setHours(0, 0, 0, 0); // Normalize today to start of day
+            const enrichedPolicies: PolicyWithDetails[] = storedPolicies.map(policy => {
+                const customer = storedCustomers.find(c => c.id === policy.customer_id);
+                const company = storedCompanies.find(c => c.id === policy.insurance_company_id);
+                const endDate = new Date(policy.policy_end_date);
+                const diffTime = endDate.getTime() - today.getTime();
+                const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-        const enrichedPolicies: PolicyWithDetails[] = storedPolicies.map(policy => {
-            const customer = storedCustomers.find(c => c.id === policy.customer_id);
-            const company = storedCompanies.find(c => c.id === policy.insurance_company_id);
-            const endDate = new Date(policy.policy_end_date);
-            const diffTime = endDate.getTime() - today.getTime();
-            const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                // Map product type id to readable name
+                const productNames: Record<string, string> = {
+                    'car': 'Car Insurance',
+                    'two-wheeler': 'Two-Wheeler',
+                    'health': 'Health Insurance',
+                    'life': 'Life Insurance',
+                    'commercial': 'Commercial Vehicle'
+                };
 
-            // Map product type id to readable name
-            const productNames: Record<string, string> = {
-                'car': 'Car Insurance',
-                'two-wheeler': 'Two-Wheeler',
-                'health': 'Health Insurance',
-                'life': 'Life Insurance',
-                'commercial': 'Commercial Vehicle'
-            };
+                return {
+                    ...policy,
+                    customer_name: customer?.name || 'Unknown Customer',
+                    company_name: company?.name || 'Unknown Company',
+                    product_name: productNames[policy.product_type] || policy.product_type,
+                    days_remaining: daysRemaining
+                };
+            });
 
-            return {
-                ...policy,
-                customer_name: customer?.name || 'Unknown Customer',
-                company_name: company?.name || 'Unknown Company',
-                product_name: productNames[policy.product_type_id] || policy.product_type_id,
-                days_remaining: daysRemaining
-            };
-        });
+            // Sort by days remaining (ascending)
+            enrichedPolicies.sort((a, b) => a.days_remaining - b.days_remaining);
 
-        // Sort by days remaining (ascending)
-        enrichedPolicies.sort((a, b) => a.days_remaining - b.days_remaining);
-
-        setPolicies(enrichedPolicies);
-        setLoading(false);
+            setPolicies(enrichedPolicies);
+        } catch (error) {
+            console.error("Failed to load data", error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const getFilteredPolicies = () => {
