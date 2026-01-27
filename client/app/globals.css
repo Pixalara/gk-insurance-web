@@ -2,6 +2,7 @@
 
 body {
   font-family: 'Montserrat', sans-serif;
+  scroll-behavior: smooth;
 }
 
 /* GLOBAL UTILITIES */
@@ -13,16 +14,12 @@ body {
 
 /* ANIMATIONS */
 @keyframes scroll {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 .animate-scroll {
-  animation: scroll 30s linear infinite;
+  animation: scroll 35s linear infinite;
 }
 
 /* Pause the slider on hover for better user experience */
@@ -37,14 +34,14 @@ body {
 
 /* CUSTOM SCROLLBAR */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #f8fafc;
 }
 
 ::-webkit-scrollbar-thumb {
   background: #004aad;
-  border-radius: 5px;
+  border-radius: 10px;
 }
