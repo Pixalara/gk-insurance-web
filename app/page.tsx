@@ -8,7 +8,6 @@ import WhatsAppButton from "./components/WhatsAppButton";
 import QuoteForm from "./components/QuoteForm";
 import StatCounter from "./components/StatCounter";
 
-// Asset data remains the same
 const insuranceProducts = [
   { id: 'two-wheeler', name: 'Two-Wheeler Insurance', image: '/bike.jpg', description: 'Comprehensive coverage for your bike with affordable premiums' },
   { id: 'car', name: 'Car Insurance', image: '/car.jpg', description: 'Complete protection for your car against all risks' },
@@ -59,7 +58,7 @@ export default function HomePage() {
       <Navbar onGetQuoteClick={scrollToQuote} brandName="GK INSURANCE SOLUTIONS" />
       <WhatsAppButton />
 
-      {/* Hero Section - Optimized for Mobile First */}
+      {/* Hero Section */}
       <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-white pt-24 md:pt-28 pb-4">
         <div className="absolute top-0 right-0 w-full md:w-1/2 h-full bg-linear-to-l from-blue-50/50 to-transparent -z-10" />
         <div className="container-custom relative z-10">
@@ -104,10 +103,10 @@ export default function HomePage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 1, delay: 0.2 }}
-              className="relative hidden lg:block"
+              className="relative block mt-10 lg:mt-0"
             >
-              <div className="relative z-10 bg-slate-50/50 backdrop-blur-xl border border-slate-200/50 p-4 rounded-[48px] shadow-2xl overflow-hidden">
-                <div className="aspect-[4/5] relative rounded-[36px] overflow-hidden group">
+              <div className="relative z-10 bg-slate-50/50 backdrop-blur-xl border border-slate-200/50 p-4 rounded-[32px] md:rounded-[48px] shadow-2xl overflow-hidden">
+                <div className="aspect-[4/5] relative rounded-[24px] md:rounded-[36px] overflow-hidden group">
                   <img src="/Hero-Vizag-Premium.png" alt="GK Insurance Solutions Premium Services" className="w-full h-full object-cover transition-all duration-1000 scale-105 group-hover:scale-100" />
                   <div className="absolute inset-0 bg-linear-to-t from-slate-900/40 to-transparent opacity-60" />
                 </div>
@@ -117,7 +116,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Partner Slider */}
+      {/* Partner Slider - Grayscale Removed */}
       <section className="py-6 bg-white border-y border-slate-50 overflow-hidden">
         <div className="container-custom">
           <div className="relative flex overflow-hidden group">
@@ -126,7 +125,8 @@ export default function HomePage() {
                 ...insurancePartners.general, ...insurancePartners.health, ...insurancePartners.life].map(
                 (partner, idx) => (
                   <div key={idx} className="flex items-center justify-center w-32 md:w-40 h-12">
-                    <img src={partner.logo} alt={partner.name} className="max-w-full max-h-full object-contain grayscale hover:grayscale-0 transition-all opacity-70 hover:opacity-100" />
+                    {/* Logos are now shown in full color */}
+                    <img src={partner.logo} alt={partner.name} className="max-w-full max-h-full object-contain transition-all opacity-90 hover:opacity-100" />
                   </div>
                 )
               )}
@@ -135,7 +135,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Insurance Products - Responsive Grid */}
+      {/* Insurance Products */}
       <section id="products" className="py-20 md:py-24 bg-slate-50">
         <div className="container-custom">
           <div className="text-center mb-12 md:mb-16">
@@ -157,7 +157,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* FIXED: GK Advantage - Centered for Mobile */}
+      {/* GK Advantage - Enlarged Icons */}
       <section id="about" className="py-20 md:py-24 bg-white relative">
         <div className="container-custom">
           <div className="text-center mb-12 md:mb-16">
@@ -175,8 +175,9 @@ export default function HomePage() {
                 whileHover={{ y: -10 }} 
                 className="group p-8 md:p-10 bg-slate-50/50 rounded-[40px] border border-transparent hover:border-blue-100 hover:bg-white transition-all duration-500 text-center md:text-left"
               >
-                <div className="w-14 h-14 md:w-16 md:h-16 bg-white rounded-2xl flex items-center justify-center mb-6 md:mb-8 shadow-xs group-hover:bg-[#004aad] transition-colors mx-auto md:mx-0">
-                  <i className={`fas ${item.icon} text-xl md:text-2xl text-[#004aad] group-hover:text-white`}></i>
+                {/* Icon box increased to w-20/h-20 on mobile and w-24/h-24 on desktop */}
+                <div className="w-20 h-20 md:w-24 md:h-24 bg-white rounded-2xl flex items-center justify-center mb-6 md:mb-8 shadow-xs group-hover:bg-[#004aad] transition-colors mx-auto md:mx-0">
+                  <i className={`fas ${item.icon} text-3xl md:text-4xl text-[#004aad] group-hover:text-white`}></i>
                 </div>
                 <h3 className="text-3xl md:text-4xl font-black text-slate-900 mb-2 flex items-baseline gap-1 justify-center md:justify-start">
                   {item.target ? <StatCounter to={item.target} suffix={item.suffix} /> : item.title}
@@ -199,7 +200,7 @@ export default function HomePage() {
 
       <Footer brandName="GK INSURANCE SOLUTIONS" />
 
-      {/* Modal - Responsive sizing */}
+      {/* Modal */}
       {showQuoteModal && (
         <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="bg-white rounded-[40px] max-w-xl w-full max-h-[90vh] overflow-y-auto p-8 md:p-12 relative shadow-2xl">
