@@ -28,6 +28,7 @@ export default function Footer({ brandName }: FooterProps) {
                             <li><Link href="/#products" className="text-sm text-slate-600 hover:text-[#004aad]">Products</Link></li>
                             <li><Link href="/#about" className="text-sm text-slate-600 hover:text-[#004aad]">About Us</Link></li>
                             <li>
+                                {/* UPDATED LINK: dashboard.insurica.in */}
                                 <a 
                                     href="https://dashboard.insurica.in" 
                                     target="_blank" 
@@ -56,7 +57,7 @@ export default function Footer({ brandName }: FooterProps) {
                     </div>
                 </div>
 
-                {/* Bottom Bar - Already responsive */}
+                {/* Bottom Bar */}
                 <div className="mt-12 pt-8 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
                     <div className="text-center md:text-left">
                         <p>© 2026 {brandName}. All rights reserved.</p>
