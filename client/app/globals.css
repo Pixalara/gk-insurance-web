@@ -19,7 +19,7 @@ body {
 }
 
 .animate-scroll {
-  animation: scroll 35s linear infinite;
+  animation: scroll 23s linear infinite;
 }
 
 /* Pause the slider on hover for better user experience */
