@@ -12,25 +12,16 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  // Updated to match your official uppercase brand name
   title: "GK INSURANCE SOLUTIONS | Authorized Insurance Advisory",
-  description: "Vizag's premier destination for bespoke insurance solutions. With 20+ years of expertise, we protect your greatest assets with reliable general, health, and life insurance.",
+  description: "Vizag's premier destination for bespoke insurance solutions. 20+ years of expertise in general, health, and life insurance.",
   metadataBase: new URL("https://www.gkinsurance.in"),
-  
-  // Professional Favicon Configuration
   icons: {
-    icon: "/favicon.ico", // Points to your new umbrella icon in the public folder
-    shortcut: "/favicon.ico",
-    apple: "/favicon.ico", // Ensures the umbrella icon appears on iPhone home screens
+    icon: "/favicon.ico", // Ensure this is in your /public folder
+    apple: "/favicon.ico",
   },
-
-  alternates: {
-    canonical: "/",
-  },
-  
   openGraph: {
     title: "GK INSURANCE SOLUTIONS",
-    description: "Reliable general insurance solutions for your assets in Visakhapatnam.",
+    description: "Protecting your greatest assets in Visakhapatnam.",
     url: "https://www.gkinsurance.in",
     siteName: "GK INSURANCE SOLUTIONS",
     locale: "en_IN",
@@ -38,21 +29,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en">
       <head>
-        {/* FontAwesome for the UI icons used in Navbar and Footer */}
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
       </head>
-      <body
-        className={`${montserrat.variable} font-sans antialiased bg-white text-slate-900`}
-        suppressHydrationWarning
-      >
+      <body className={`${montserrat.variable} font-sans antialiased`} suppressHydrationWarning>
         <AuthProvider>
           <ToastProvider>
             <SmoothScroll />

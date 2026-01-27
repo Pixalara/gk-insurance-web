@@ -1,47 +1,33 @@
 @import "tailwindcss";
 
-body {
-  font-family: 'Montserrat', sans-serif;
+/* Fix for Tailwind v4 @apply errors */
+@reference "tailwindcss";
+
+@layer utilities {
+  .container-custom {
+    /* Responsive padding: 1rem on mobile, 1.5rem on tablet, 2rem on desktop */
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .animate-scroll {
+    display: flex;
+    width: max-content;
+    /* Optimized for smooth looping */
+    animation: scroll 30s linear infinite;
+  }
+
+  @keyframes scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+}
+
+html {
   scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* GLOBAL UTILITIES */
-.container-custom {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 6%;
-}
-
-/* ANIMATIONS */
-@keyframes scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
-.animate-scroll {
-  animation: scroll 23s linear infinite;
-}
-
-/* Pause the slider on hover for better user experience */
-.pause:hover {
-  animation-play-state: paused;
-}
-
-/* Professional card hover transition */
-.transition-card {
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* CUSTOM SCROLLBAR */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #f8fafc;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #004aad;
-  border-radius: 10px;
+body {
+  @apply antialiased bg-white text-slate-900;
+  overflow-x: hidden; /* Prevents horizontal scroll on mobile */
 }
