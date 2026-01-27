@@ -58,42 +58,69 @@ export default function HomePage() {
       <Navbar onGetQuoteClick={scrollToQuote} brandName="GK INSURANCE SOLUTIONS" />
       <WhatsAppButton />
 
-      {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-white pt-24 md:pt-28 pb-4">
+      {/* Floating Trust Badge */}
+      <motion.div 
+        initial={{ x: -100, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ delay: 1, duration: 0.8 }}
+        className="fixed bottom-8 left-8 z-[90] hidden md:flex items-center gap-4 bg-white/80 backdrop-blur-md border border-slate-100 p-2 pr-6 rounded-full shadow-2xl shadow-blue-900/10"
+      >
+        <div className="w-12 h-12 bg-[#004aad] rounded-full flex items-center justify-center text-white shadow-lg">
+          <i className="fas fa-award text-xl"></i>
+        </div>
+        <div>
+          <p className="text-[10px] font-black uppercase tracking-widest text-[#004aad] leading-none mb-1">Expert Advisory</p>
+          <p className="text-sm font-bold text-slate-900 whitespace-nowrap">20+ Years Excellence</p>
+        </div>
+      </motion.div>
+
+      {/* Hero Section - Optimized Vertical Space */}
+      <section className="relative min-h-[75vh] lg:min-h-[85vh] flex items-center overflow-hidden bg-white pt-16 md:pt-20 pb-2">
         <div className="absolute top-0 right-0 w-full md:w-1/2 h-full bg-linear-to-l from-blue-50/50 to-transparent -z-10" />
         <div className="container-custom relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
               className="text-center lg:text-left"
             >
-              <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-slate-50 border border-slate-100 mb-6 md:mb-8 shadow-xs">
+              {/* Reduced gap below badge */}
+              <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-slate-50 border border-slate-100 mb-4 md:mb-6 shadow-xs">
                 <i className="fas fa-shield-check text-[#004aad] text-sm"></i>
                 <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Authorized Insurance Advisory</span>
               </div>
-              <h1 className="text-4xl sm:text-6xl md:text-8xl font-black leading-tight mb-6 md:mb-8 text-slate-900 tracking-tighter">
+              
+              {/* Optimized Typography spacing */}
+              <h1 className="text-4xl sm:text-6xl md:text-8xl font-black leading-tight mb-4 md:mb-6 text-slate-900 tracking-tighter">
                 Protecting Your <br />
                 <span className="text-transparent bg-clip-text bg-linear-to-r from-[#004aad] to-blue-500">Greatest Assets.</span>
               </h1>
-              <p className="text-lg md:text-2xl text-slate-500 font-medium mb-10 md:mb-12 leading-relaxed max-w-xl mx-auto lg:mx-0">
+              <p className="text-lg md:text-2xl text-slate-500 font-medium mb-6 md:mb-8 leading-relaxed max-w-xl mx-auto lg:mx-0">
                 Vizag's premier destination for bespoke insurance solutions. 20+ years of expertise.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 md:gap-6 items-center justify-center lg:justify-start">
+
+              {/* Premium Stat & CTA Placement */}
+              <div className="flex flex-col sm:flex-row gap-6 items-center justify-center lg:justify-start">
                 <button 
                   onClick={scrollToQuote}
-                  className="w-full sm:w-auto px-10 md:px-12 py-5 md:py-6 bg-[#004aad] text-white font-bold text-lg rounded-2xl hover:bg-[#003580] transition-all duration-500 hover:shadow-xl flex items-center justify-center gap-4 group"
+                  className="w-full sm:w-auto px-10 md:px-12 py-5 md:py-6 bg-[#004aad] text-white font-black text-lg uppercase tracking-widest rounded-2xl hover:bg-[#003580] transition-all duration-500 hover:shadow-[0_20px_50px_rgba(0,74,173,0.3)] flex items-center justify-center gap-4 group"
                 >
-                  Request Consultation
+                  Consultation
                   <i className="fas fa-arrow-right-long group-hover:translate-x-2 transition-transform duration-300"></i>
                 </button>
-                <div className="flex items-center gap-4 py-4 px-2 border-l border-slate-200">
-                  <div className="text-left">
-                    <p className="text-2xl font-black text-slate-900 leading-none">
-                      <StatCounter to={1500} suffix="+" />
+
+                <div className="flex items-center gap-6 py-2 px-6 border-l-2 border-slate-100 ml-0 sm:ml-4">
+                  <div className="flex flex-col text-left">
+                    <div className="flex items-center gap-2">
+                      <span className="text-3xl md:text-4xl font-black text-slate-900 tracking-tighter leading-none">
+                        <StatCounter to={1500} suffix="+" />
+                      </span>
+                      <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                    </div>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1 whitespace-nowrap">
+                      Customers Secured
                     </p>
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Customers Secured</p>
                   </div>
                 </div>
               </div>
@@ -103,7 +130,7 @@ export default function HomePage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 1, delay: 0.2 }}
-              className="relative block mt-10 lg:mt-0"
+              className="relative block mt-6 lg:mt-0"
             >
               <div className="relative z-10 bg-slate-50/50 backdrop-blur-xl border border-slate-200/50 p-4 rounded-[32px] md:rounded-[48px] shadow-2xl overflow-hidden">
                 <div className="aspect-[4/5] relative rounded-[24px] md:rounded-[36px] overflow-hidden group">
@@ -134,7 +161,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Insurance Products - Centered Text */}
+      {/* Insurance Products - Centered Alignment */}
       <section id="products" className="py-20 md:py-24 bg-slate-50">
         <div className="container-custom">
           <div className="text-center mb-12 md:mb-16">
@@ -146,11 +173,9 @@ export default function HomePage() {
               <motion.div 
                 key={product.id} 
                 whileHover={{ y: -8 }} 
-                /* text-center added here to center all content */
                 className="group bg-white rounded-[32px] p-8 shadow-xs hover:shadow-2xl border border-slate-200 transition-all cursor-pointer flex flex-col h-full text-center" 
                 onClick={() => handleGetQuote(product.name)}
               >
-                {/* mx-auto centers the image container */}
                 <div className="h-32 md:h-40 flex items-center justify-center mb-6 mx-auto">
                   <img src={product.image} alt={product.name} className="h-full object-contain" />
                 </div>
