@@ -29,7 +29,7 @@ export default function Footer({ brandName }: FooterProps) {
                             <li><Link href="/#about" className="text-sm text-slate-600 hover:text-[#004aad]">About Us</Link></li>
                             <li>
                                 <a 
-                                    href="https://admin.gkinsurance.in" 
+                                    href="https://admin.insurica.in" 
                                     target="_blank" 
                                     rel="noopener noreferrer"
                                     className="text-sm text-slate-600 hover:text-[#004aad] transition-colors font-semibold"
