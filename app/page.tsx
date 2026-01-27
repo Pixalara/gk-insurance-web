@@ -116,7 +116,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Partner Slider - Grayscale Removed */}
+      {/* Partner Slider */}
       <section className="py-6 bg-white border-y border-slate-50 overflow-hidden">
         <div className="container-custom">
           <div className="relative flex overflow-hidden group">
@@ -125,7 +125,6 @@ export default function HomePage() {
                 ...insurancePartners.general, ...insurancePartners.health, ...insurancePartners.life].map(
                 (partner, idx) => (
                   <div key={idx} className="flex items-center justify-center w-32 md:w-40 h-12">
-                    {/* Logos are now shown in full color */}
                     <img src={partner.logo} alt={partner.name} className="max-w-full max-h-full object-contain transition-all opacity-90 hover:opacity-100" />
                   </div>
                 )
@@ -135,7 +134,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Insurance Products */}
+      {/* Insurance Products - Centered Text */}
       <section id="products" className="py-20 md:py-24 bg-slate-50">
         <div className="container-custom">
           <div className="text-center mb-12 md:mb-16">
@@ -144,8 +143,17 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             {insuranceProducts.map((product) => (
-              <motion.div key={product.id} whileHover={{ y: -8 }} className="group bg-white rounded-[32px] p-8 shadow-xs hover:shadow-2xl border border-slate-200 transition-all cursor-pointer flex flex-col h-full" onClick={() => handleGetQuote(product.name)}>
-                <div className="h-32 md:h-40 flex items-center justify-center mb-6"><img src={product.image} alt={product.name} className="h-full object-contain" /></div>
+              <motion.div 
+                key={product.id} 
+                whileHover={{ y: -8 }} 
+                /* text-center added here to center all content */
+                className="group bg-white rounded-[32px] p-8 shadow-xs hover:shadow-2xl border border-slate-200 transition-all cursor-pointer flex flex-col h-full text-center" 
+                onClick={() => handleGetQuote(product.name)}
+              >
+                {/* mx-auto centers the image container */}
+                <div className="h-32 md:h-40 flex items-center justify-center mb-6 mx-auto">
+                  <img src={product.image} alt={product.name} className="h-full object-contain" />
+                </div>
                 <h3 className="text-xl font-bold text-slate-900 mb-3">{product.name}</h3>
                 <p className="text-sm text-slate-500 mb-6 leading-relaxed flex-grow">{product.description}</p>
                 <div className="mt-auto">
@@ -157,7 +165,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* GK Advantage - Enlarged Icons */}
+      {/* GK Advantage */}
       <section id="about" className="py-20 md:py-24 bg-white relative">
         <div className="container-custom">
           <div className="text-center mb-12 md:mb-16">
@@ -175,7 +183,6 @@ export default function HomePage() {
                 whileHover={{ y: -10 }} 
                 className="group p-8 md:p-10 bg-slate-50/50 rounded-[40px] border border-transparent hover:border-blue-100 hover:bg-white transition-all duration-500 text-center md:text-left"
               >
-                {/* Icon box increased to w-20/h-20 on mobile and w-24/h-24 on desktop */}
                 <div className="w-20 h-20 md:w-24 md:h-24 bg-white rounded-2xl flex items-center justify-center mb-6 md:mb-8 shadow-xs group-hover:bg-[#004aad] transition-colors mx-auto md:mx-0">
                   <i className={`fas ${item.icon} text-3xl md:text-4xl text-[#004aad] group-hover:text-white`}></i>
                 </div>
