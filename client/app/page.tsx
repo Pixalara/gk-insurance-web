@@ -6,6 +6,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import WhatsAppButton from "./components/WhatsAppButton";
 import QuoteForm from "./components/QuoteForm";
+import StatCounter from "./components/StatCounter";
 
 const insuranceProducts = [
   {
@@ -83,6 +84,7 @@ const insurancePartners = {
     { name: 'Bajaj Life', logo: '/bajajlife.png' },
   ],
 };
+
 const handleClickWhatsApp = () => {
   const message = encodeURIComponent('Hi GK Insurance, I need help with insurance quotes');
   const phone = '919573322990';
@@ -140,24 +142,28 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Partner Logos Slider */}
-      <section className="py-12 bg-white border-y border-slate-200  ">
+      {/* Professional Infinite Partner Slider */}
+      <section className="py-16 bg-white border-y border-slate-100 overflow-hidden">
         <div className="container-custom">
-          <p className="text-center text-sm font-semibold text-slate-600 uppercase tracking-wide mb-6">
-            Trusted Insurance Partners
-          </p>
-          <div className="relative overflow-hidden w-full ">
-            <div className="flex w-max animate-scroll gap-12 hover:pause">
-              {[...insurancePartners.general, ...insurancePartners.health, ...insurancePartners.life, ...insurancePartners.general, ...insurancePartners.health, ...insurancePartners.life].map(
+          <div className="text-center mb-10">
+            <h3 className="text-slate-400 font-bold text-xs uppercase tracking-[0.2em]">
+              Our Strategic Claims & Insurance Partners
+            </h3>
+          </div>
+          
+          <div className="relative flex overflow-hidden group">
+            <div className="flex py-4 animate-scroll whitespace-nowrap gap-16 pause">
+              {[...insurancePartners.general, ...insurancePartners.health, ...insurancePartners.life, 
+                ...insurancePartners.general, ...insurancePartners.health, ...insurancePartners.life].map(
                 (partner, idx) => (
                   <div
                     key={idx}
-                    className="h-20 min-w-[120px] rounded-lg flex items-center justify-center p-4 bg-white "
+                    className="flex items-center justify-center w-40 h-20 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500"
                   >
                     <img
                       src={partner.logo}
                       alt={partner.name}
-                      className="w-full h-full object-contain transition-all duration-300"
+                      className="max-w-full max-h-full object-contain"
                     />
                   </div>
                 )
@@ -179,7 +185,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6  ">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {insuranceProducts.map((product, idx) => (
               <motion.div
                 key={product.id}
@@ -212,38 +218,62 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Why Choose Us */}
-      <section id="about" className="py-20 bg-white">
-        <div className="container-custom">
+      {/* Why Choose Us - Bento Grid & Animated Counters */}
+      <section id="about" className="py-24 bg-linear-to-b from-white to-slate-50 relative overflow-hidden">
+        <div className="container-custom relative z-10">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-4">
-              Why Choose GK Insurance?
+            <motion.span 
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              className="text-[#004aad] font-bold tracking-widest uppercase text-sm mb-3 block"
+            >
+              The GK Advantage
+            </motion.span>
+            <h2 className="text-4xl md:text-6xl font-black text-slate-900 mb-6 tracking-tight">
+              Why Choose <span className="text-transparent bg-clip-text bg-linear-to-r from-[#004aad] to-blue-600">GK Insurance?</span>
             </h2>
-            <p className="text-lg text-slate-600">
-              Your trusted insurance partner in Visakhapatnam
+            <p className="text-lg text-slate-600 max-w-2xl mx-auto font-medium">
+              Trusted by thousands in Visakhapatnam. We don't just sell policies; we engineer peace of mind.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              { icon: 'fa-award', title: '20+ Years', subtitle: 'Experience' },
-              { icon: 'fa-users', title: '1500+', subtitle: 'Happy Customers' },
-              { icon: 'fa-handshake', title: '10+', subtitle: 'Insurance Partners' },
-              { icon: 'fa-star', title: 'Best Rates', subtitle: 'in Vizag' },
+              { icon: 'fa-award', target: 20, suffix: '+', label: 'Years', subtitle: 'Industry Experience' },
+              { icon: 'fa-users', target: 1500, suffix: '+', label: 'Clients', subtitle: 'Happy Customers Yearly' },
+              { icon: 'fa-handshake', target: 10, suffix: '+', label: 'Partners', subtitle: 'Insurance Carriers' },
+              { icon: 'fa-star', target: null, title: 'Best Rates', subtitle: 'Guaranteed in Vizag' },
             ].map((item, idx) => (
               <motion.div
                 key={idx}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="text-center"
+                whileHover={{ y: -10 }}
+                className="relative group cursor-default"
               >
-                <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <i className={`fas ${item.icon} text-3xl text-[#004aad]`}></i>
+                <div className="h-full bg-white/70 backdrop-blur-md border border-slate-100 p-8 rounded-3xl shadow-sm group-hover:shadow-2xl group-hover:border-[#004aad]/20 transition-all duration-500">
+                  <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-[#004aad] transition-all duration-500">
+                    <i className={`fas ${item.icon} text-2xl text-[#004aad] group-hover:text-white`}></i>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <h3 className="text-4xl font-black text-slate-900 flex items-baseline gap-1">
+                      {item.target ? (
+                        <>
+                          <StatCounter to={item.target} />
+                          <span className="text-[#004aad] text-2xl">{item.suffix}</span>
+                          {item.label && <span className="text-lg font-bold text-slate-400 ml-1">{item.label}</span>}
+                        </>
+                      ) : (
+                        <span className="text-3xl">{item.title}</span>
+                      )}
+                    </h3>
+                    <p className="text-slate-500 font-semibold text-xs uppercase tracking-wider">{item.subtitle}</p>
+                  </div>
+                  <div className="absolute bottom-0 left-8 right-8 h-1 bg-linear-to-r from-[#004aad] to-blue-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 rounded-full" />
                 </div>
-                <h3 className="text-3xl font-black text-slate-900 mb-1">{item.title}</h3>
-                <p className="text-slate-600 font-medium">{item.subtitle}</p>
               </motion.div>
             ))}
           </div>
@@ -263,12 +293,8 @@ export default function HomePage() {
       <section id="contact" className="py-20 bg-slate-50">
         <div className="container-custom">
           <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-4">
-              Get in Touch
-            </h2>
-            <p className="text-lg text-slate-600">
-              Visit our office or reach out to us
-            </p>
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-4">Get in Touch</h2>
+            <p className="text-lg text-slate-600">Visit our office or reach out to us</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
@@ -291,7 +317,7 @@ export default function HomePage() {
 
       {/* Quote Modal */}
       {showQuoteModal && (
-        <div className="fixed inset-0 bg-black/60 z-100 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="bg-white rounded-3xl max-w-lg w-full max-h-[85dvh] overflow-y-auto p-4 md:p-8 relative shadow-2xl">
             <button
               onClick={() => setShowQuoteModal(false)}
