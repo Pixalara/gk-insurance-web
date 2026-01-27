@@ -1,14 +1,20 @@
 import Link from 'next/link';
 
-export default function Footer() {
+// Define the interface to accept the brandName prop passed from page.tsx
+interface FooterProps {
+    brandName: string;
+}
+
+export default function Footer({ brandName }: FooterProps) {
     return (
         <footer className="bg-slate-50 border-t border-slate-200 mt-20 py-12">
             <div className="container-custom py-12">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     {/* Company Info */}
                     <div className="col-span-1 md:col-span-2">
+                        {/* Dynamic Brand Name based on props */}
                         <div className="text-2xl font-black uppercase tracking-tight text-[#004aad] mb-4">
-                            GK Insurance Solutions
+                            {brandName}
                         </div>
                         <p className="text-slate-600 text-sm leading-relaxed mb-4">
                             With over 20 years of experience, we serve 1500+ customers annually across Visakhapatnam,
@@ -80,7 +86,8 @@ export default function Footer() {
                 {/* Bottom Bar */}
                 <div className="mt-12 pt-8 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
                     <div className="text-center md:text-left">
-                        <p>© 2026 GK Insurance Solutions. All rights reserved.</p>
+                        {/* Dynamic Copyright Section */}
+                        <p>© 2026 {brandName}. All rights reserved.</p>
                         <p>Insurance is the subject matter of solicitation.</p>
                     </div>
                     <div className="font-semibold">
