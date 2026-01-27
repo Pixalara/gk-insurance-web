@@ -22,18 +22,17 @@ const insuranceProducts = [
 const insurancePartners = {
   general: [
     { name: 'Bajaj General Insurance', logo: '/Bajaj.png' },
-    { name: 'Tata AIG', logo: '/tata.png' },
+    { name: 'Tata AIG', logo: '/Tata.png' }, // Updated to 'Tata.png' to match file name
     { name: 'ICICI Lombard', logo: '/icic.png' },
     { name: 'Go Digit', logo: '/Godigit.png' },
-    { name: 'Liberty General Insurance', logo: '/Liberty.png' },
+    { name: 'Liberty General Insurance', logo: '/Liberty.png' }, // Updated to 'Liberty.png'
   ],
   health: [
     { name: 'Star Health', logo: '/starhealth.png' },
-    { name: 'Bajaj Health', logo: '/Bajaj.png' },
   ],
   life: [
     { name: 'LIC', logo: '/lic.png' },
-    { name: 'Bajaj Life', logo: '/bajajlife.png' },
+    { name: 'Bajaj Life', logo: '/BajajLife.png' }, // Updated to 'BajajLife.png'
   ],
 };
 
