@@ -19,7 +19,7 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
         email: '',
         insurance_type: productType || '',
         vehicle_number: '',
-        dob: '', // Added DOB to state
+        dob: '', // Field added for Health, Life, and Travel
         message: '',
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,7 +58,7 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
         if (!formData.phone.trim()) newErrors.phone = true;
         if (!formData.insurance_type) newErrors.insurance_type = true;
 
-        // Added validation for DOB if required products are selected
+        // Validation for DOB if required products are selected
         if ((formData.insurance_type === 'Travel Insurance' || 
              formData.insurance_type === 'Health Insurance' || 
              formData.insurance_type === 'Life Insurance') && !formData.dob) {
@@ -86,7 +86,7 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                 email: formData.email || undefined,
                 insurance_type: formData.insurance_type,
                 vehicle_number: formData.vehicle_number || undefined,
-                dob: formData.dob || undefined, // Include DOB in payload
+                dob: formData.dob || undefined,
                 message: formData.message || undefined,
                 status: 'new',
                 source: 'website',
@@ -94,13 +94,14 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
 
             saveLead(leadPayload as any);
 
+            // Calls the server action updated with dob in the interface
             await sendQuoteEmail({
                 name: formData.name,
                 phone: formData.phone,
                 email: formData.email,
                 insurance_type: formData.insurance_type,
                 vehicle_number: formData.vehicle_number,
-                dob: formData.dob, // Added to email action
+                dob: formData.dob,
                 message: formData.message,
             });
 
@@ -118,7 +119,7 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                         email: formData.email,
                         insurance_type: formData.insurance_type,
                         vehicle_number: formData.vehicle_number,
-                        dob: formData.dob, // Added to Web3Forms submission
+                        dob: formData.dob,
                         message: formData.message,
                         subject: `New Quote Request: ${formData.insurance_type} - ${formData.name}`,
                         from_name: "Gk Insurance Website"
@@ -160,9 +161,10 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                     Your quote request has been received. Our advisory team will contact you shortly.
                 </p>
 
+                {/* Smaller centered button that refreshes to Hero */}
                 <button
                     onClick={() => {
-                        window.location.href = "/";
+                        window.location.href = "/"; 
                     }}
                     className="inline-flex items-center justify-center px-8 py-3 bg-slate-900 text-white font-black text-xs uppercase tracking-[0.2em] rounded-xl hover:bg-[#004aad] transition-all duration-500 shadow-lg group mx-auto"
                 >
@@ -214,6 +216,7 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                 />
             </div>
 
+            {/* Premium Custom Dropdown */}
             <div className="space-y-2" ref={dropdownRef}>
                 <label className="block text-xs font-black text-slate-500 uppercase tracking-widest">Insurance Type *</label>
                 <div className="relative">
@@ -251,7 +254,7 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                 </div>
             </div>
 
-            {/* CONDITIONAL DOB FIELD */}
+            {/* Conditional DOB Field */}
             {(formData.insurance_type === 'Travel Insurance' || 
               formData.insurance_type === 'Health Insurance' || 
               formData.insurance_type === 'Life Insurance') && (
@@ -273,6 +276,7 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                 </div>
             )}
 
+            {/* Conditional Vehicle Registration Field */}
             {(formData.insurance_type.includes('Vehicle') || formData.insurance_type.includes('Wheeler') || formData.insurance_type.includes('Car')) && (
                 <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
                     <label className="block text-xs font-black text-slate-500 uppercase tracking-widest">Vehicle Registration Number</label>

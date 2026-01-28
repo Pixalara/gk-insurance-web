@@ -2,18 +2,20 @@
 
 import nodemailer from 'nodemailer';
 
+// Updated interface to include DOB
 interface EmailPayload {
     name: string;
     phone: string;
     email?: string;
     insurance_type: string;
     vehicle_number?: string;
+    dob?: string; // Added optional dob property
     message?: string;
 }
 
 export async function sendQuoteEmail(data: EmailPayload) {
     const transporter = nodemailer.createTransport({
-        service: 'gmail', // Or use 'host', 'port' etc. for other providers
+        service: 'gmail', 
         auth: {
             user: process.env.EMAIL_USER, // Admin email
             pass: process.env.EMAIL_PASS, // App Password
@@ -31,6 +33,7 @@ export async function sendQuoteEmail(data: EmailPayload) {
                 <p><strong>Phone:</strong> ${data.phone}</p>
                 <p><strong>Email:</strong> ${data.email || 'N/A'}</p>
                 <p><strong>Insurance Type:</strong> ${data.insurance_type}</p>
+                ${data.dob ? `<p><strong>Date of Birth:</strong> ${data.dob}</p>` : ''}
                 ${data.vehicle_number ? `<p><strong>Vehicle Number:</strong> ${data.vehicle_number}</p>` : ''}
                 <p><strong>Message:</strong></p>
                 <p style="background: #f9f9f9; padding: 10px; border-radius: 5px;">${data.message || 'No message provided'}</p>
@@ -46,8 +49,3 @@ export async function sendQuoteEmail(data: EmailPayload) {
         return { success: false, error: 'Failed to send email' };
     }
 }
-
-
-
-
-
