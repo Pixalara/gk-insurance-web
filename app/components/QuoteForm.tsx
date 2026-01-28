@@ -19,6 +19,7 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
         email: '',
         insurance_type: productType || '',
         vehicle_number: '',
+        dob: '', // Added DOB to state
         message: '',
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -57,6 +58,13 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
         if (!formData.phone.trim()) newErrors.phone = true;
         if (!formData.insurance_type) newErrors.insurance_type = true;
 
+        // Added validation for DOB if required products are selected
+        if ((formData.insurance_type === 'Travel Insurance' || 
+             formData.insurance_type === 'Health Insurance' || 
+             formData.insurance_type === 'Life Insurance') && !formData.dob) {
+            newErrors.dob = true;
+        }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -78,6 +86,7 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                 email: formData.email || undefined,
                 insurance_type: formData.insurance_type,
                 vehicle_number: formData.vehicle_number || undefined,
+                dob: formData.dob || undefined, // Include DOB in payload
                 message: formData.message || undefined,
                 status: 'new',
                 source: 'website',
@@ -91,6 +100,7 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                 email: formData.email,
                 insurance_type: formData.insurance_type,
                 vehicle_number: formData.vehicle_number,
+                dob: formData.dob, // Added to email action
                 message: formData.message,
             });
 
@@ -108,6 +118,7 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                         email: formData.email,
                         insurance_type: formData.insurance_type,
                         vehicle_number: formData.vehicle_number,
+                        dob: formData.dob, // Added to Web3Forms submission
                         message: formData.message,
                         subject: `New Quote Request: ${formData.insurance_type} - ${formData.name}`,
                         from_name: "Gk Insurance Website"
@@ -151,7 +162,7 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
 
                 <button
                     onClick={() => {
-                        window.location.href = "/"; // Navigates to Hero and Refreshes
+                        window.location.href = "/";
                     }}
                     className="inline-flex items-center justify-center px-8 py-3 bg-slate-900 text-white font-black text-xs uppercase tracking-[0.2em] rounded-xl hover:bg-[#004aad] transition-all duration-500 shadow-lg group mx-auto"
                 >
@@ -239,6 +250,28 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                     )}
                 </div>
             </div>
+
+            {/* CONDITIONAL DOB FIELD */}
+            {(formData.insurance_type === 'Travel Insurance' || 
+              formData.insurance_type === 'Health Insurance' || 
+              formData.insurance_type === 'Life Insurance') && (
+                <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
+                    <label className="block text-xs font-black text-slate-500 uppercase tracking-widest">
+                        Date of Birth <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                        type="date"
+                        required
+                        value={formData.dob}
+                        onChange={(e) => {
+                            setFormData({ ...formData, dob: e.target.value });
+                            if (errors.dob) setErrors({ ...errors, dob: false });
+                        }}
+                        className={`w-full px-6 py-4 bg-slate-50 border-2 rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#004aad]/5 focus:bg-white transition-all font-semibold
+                            ${errors.dob ? 'border-red-500 bg-red-50' : 'border-slate-100'}`}
+                    />
+                </div>
+            )}
 
             {(formData.insurance_type.includes('Vehicle') || formData.insurance_type.includes('Wheeler') || formData.insurance_type.includes('Car')) && (
                 <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
