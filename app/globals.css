@@ -1,33 +1,44 @@
-@import "tailwindcss";
-
-/* Fix for Tailwind v4 @apply errors */
-@reference "tailwindcss";
-
-@layer utilities {
-  .container-custom {
-    /* Responsive padding: 1rem on mobile, 1.5rem on tablet, 2rem on desktop */
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
-  }
-
-  .animate-scroll {
-    display: flex;
-    width: max-content;
-    /* Optimized for smooth looping */
-    animation: scroll 30s linear infinite;
-  }
-
-  @keyframes scroll {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-  }
+/* --- Premium React DatePicker Styling --- */
+.react-datepicker {
+  font-family: inherit !important;
+  border-radius: 1.5rem !important;
+  border: 1px solid #f1f5f9 !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1) !important;
+  padding: 8px !important;
 }
 
-html {
-  scroll-behavior: smooth;
-  -webkit-tap-highlight-color: transparent;
+.react-datepicker__header {
+  background-color: white !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  border-top-left-radius: 1.5rem !important;
+  border-top-right-radius: 1.5rem !important;
+  padding-top: 12px !important;
 }
 
-body {
-  @apply antialiased bg-white text-slate-900;
-  overflow-x: hidden; /* Prevents horizontal scroll on mobile */
+.react-datepicker__current-month {
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  color: #0f172a !important;
+}
+
+.react-datepicker__day--selected, 
+.react-datepicker__day--keyboard-selected {
+  background-color: #004aad !important; /* GK Brand Blue */
+  color: white !important;
+  border-radius: 0.75rem !important;
+}
+
+.react-datepicker__day:hover {
+  background-color: #f1f5f9 !important;
+  border-radius: 0.75rem !important;
+}
+
+.react-datepicker__navigation {
+  top: 15px !important;
+}
+
+/* Ensure the input takes full width of the form container */
+.react-datepicker-wrapper {
+  width: 100% !important;
 }
