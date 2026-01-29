@@ -83,6 +83,8 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                 : [...prev.destinations, country]
         }));
         setSearchTerm('');
+        // FIXED: Automatically close the country search list after selecting a country
+        setShowCountryList(false);
     };
 
     // Helper for Trip Duration Calculation
