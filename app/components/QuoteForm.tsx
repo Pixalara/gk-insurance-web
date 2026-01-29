@@ -6,10 +6,9 @@ import { saveLead } from '@/app/utils/storage';
 import { useToast } from '@/app/context/ToastContext';
 import { sendQuoteEmail } from '@/app/actions/email-actions';
 
-// Import Premium Date Picker
+// Premium Date Picker Integration
 import DatePicker from 'react-datepicker';
 import "react-datepicker/dist/react-datepicker.css";
-import './datepicker-custom.css'; // Add this for premium styling
 
 interface QuoteFormProps {
     productType?: string;
@@ -24,7 +23,7 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
         email: '',
         insurance_type: productType || '',
         vehicle_number: '',
-        dob: null as Date | null, // Updated for React DatePicker
+        dob: null as Date | null, // Date object for React DatePicker
         message: '',
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -63,6 +62,7 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
         if (!formData.phone.trim()) newErrors.phone = true;
         if (!formData.insurance_type) newErrors.insurance_type = true;
 
+        // Validation for DOB on specific products
         if ((formData.insurance_type === 'Travel Insurance' || 
              formData.insurance_type === 'Health Insurance' || 
              formData.insurance_type === 'Life Insurance') && !formData.dob) {
@@ -84,7 +84,8 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
         setIsSubmitting(true);
 
         try {
-            const formattedDate = formData.dob ? formData.dob.toLocaleDateString() : '';
+            // Format date for consistent storage and email
+            const formattedDate = formData.dob ? formData.dob.toLocaleDateString('en-GB') : '';
 
             const leadPayload = {
                 name: formData.name,
@@ -100,6 +101,7 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
 
             saveLead(leadPayload as any);
 
+            // Updated server action call
             await sendQuoteEmail({
                 name: formData.name,
                 phone: formData.phone,
@@ -135,7 +137,7 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
             success('Quote request submitted successfully!');
 
         } catch (error) {
-            console.error('Critical error:', error);
+            console.error('Critical submission error:', error);
             errorToast('Failed to submit form.');
         } finally {
             setIsSubmitting(false);
@@ -174,6 +176,11 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                 </div>
             </div>
 
+            <div className="space-y-2">
+                <label className="block text-xs font-black text-slate-500 uppercase tracking-widest">Email Address (Optional)</label>
+                <input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-[#004aad]/5 focus:bg-white transition-all font-semibold" placeholder="name@example.com" />
+            </div>
+
             <div className="space-y-2" ref={dropdownRef}>
                 <label className="block text-xs font-black text-slate-500 uppercase tracking-widest">Insurance Type *</label>
                 <div className="relative">
@@ -195,19 +202,23 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                 </div>
             </div>
 
-            {/* PREMIUM REACT DATEPICKER */}
+            {/* Premium Calendar Component */}
             {(formData.insurance_type === 'Travel Insurance' || formData.insurance_type === 'Health Insurance' || formData.insurance_type === 'Life Insurance') && (
                 <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
                     <label className="block text-xs font-black text-slate-500 uppercase tracking-widest">Date of Birth <span className="text-red-500">*</span></label>
-                    <div className="relative premium-datepicker-container">
+                    <div className="relative">
                         <DatePicker
                             selected={formData.dob}
-                            onChange={(date: Date | null) => setFormData({ ...formData, dob: date })}
+                            onChange={(date: Date | null) => {
+                                setFormData({ ...formData, dob: date });
+                                if (errors.dob) setErrors({ ...errors, dob: false });
+                            }}
                             dateFormat="dd/MM/yyyy"
                             placeholderText="DD/MM/YYYY"
                             showMonthDropdown
                             showYearDropdown
                             dropdownMode="select"
+                            maxDate={new Date()} // Prevents future date selection
                             className={`w-full px-6 py-4 bg-slate-50 border-2 rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#004aad]/5 focus:bg-white transition-all font-semibold ${errors.dob ? 'border-red-500 bg-red-50' : 'border-slate-100'}`}
                         />
                         <i className="fas fa-calendar-alt absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
@@ -224,10 +235,10 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
 
             <div className="space-y-2">
                 <label className="block text-xs font-black text-slate-500 uppercase tracking-widest">Special Requirements</label>
-                <textarea value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} rows={3} className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-[#004aad]/5 focus:bg-white transition-all font-semibold resize-none" placeholder="Tell us more..." />
+                <textarea value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} rows={3} className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-[#004aad]/5 focus:bg-white transition-all font-semibold resize-none" placeholder="Tell us more about your needs..." />
             </div>
 
-            <button type="submit" disabled={isSubmitting} className="group w-full py-5 bg-[#004aad] text-white font-black text-lg uppercase tracking-widest rounded-2xl hover:bg-[#003580] transition-all duration-300 shadow-xl shadow-[#004aad]/20 flex items-center justify-center gap-3">
+            <button type="submit" disabled={isSubmitting} className="group w-full py-5 bg-[#004aad] text-white font-black text-lg uppercase tracking-widest rounded-2xl hover:bg-[#003580] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-[#004aad]/20 flex items-center justify-center gap-3">
                 {isSubmitting ? <i className="fas fa-circle-notch fa-spin"></i> : <><span className="hidden sm:inline">Get My Quote</span><i className="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i></>}
             </button>
         </form>
