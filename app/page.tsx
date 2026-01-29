@@ -142,16 +142,22 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Partner Slider */}
-      <section className="py-6 bg-white border-y border-slate-50 overflow-hidden">
+      {/* FIXED: Partner Infinite Slider Section */}
+      <section className="py-12 bg-white border-y border-slate-50 overflow-hidden">
         <div className="container-custom">
-          <div className="relative flex overflow-hidden group">
-            <div className="flex py-2 animate-scroll whitespace-nowrap gap-8 md:gap-12">
+          {/* Masking for soft fade edges */}
+          <div className="relative flex overflow-hidden group [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+            <div className="flex py-4 animate-scroll whitespace-nowrap gap-16 md:gap-24 items-center">
               {[...insurancePartners.general, ...insurancePartners.health, ...insurancePartners.life, 
+                ...insurancePartners.general, ...insurancePartners.health, ...insurancePartners.life,
                 ...insurancePartners.general, ...insurancePartners.health, ...insurancePartners.life].map(
                 (partner, idx) => (
-                  <div key={idx} className="flex items-center justify-center w-32 md:w-40 h-12">
-                    <img src={partner.logo} alt={partner.name} className="max-w-full max-h-full object-contain transition-all opacity-90 hover:opacity-100" />
+                  <div key={idx} className="flex-shrink-0 flex items-center justify-center">
+                    <img 
+                      src={partner.logo} 
+                      alt={partner.name} 
+                      className="h-10 md:h-12 w-auto object-contain transition-all grayscale opacity-60 hover:grayscale-0 hover:opacity-100 duration-500" 
+                    />
                   </div>
                 )
               )}
