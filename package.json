@@ -17,7 +17,7 @@
     "nodemailer": "^7.0.12",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "react-datepicker": "^8.1.0", // ADD THIS LINE
+    "react-datepicker": "^8.1.0",
     "react-icons": "^5.5.0"
   },
   "devDependencies": {
@@ -26,7 +26,7 @@
     "@types/nodemailer": "^7.0.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@types/react-datepicker": "^7.0.0", // ADD THIS LINE
+    "@types/react-datepicker": "^7.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.4",
     "tailwindcss": "^4",
