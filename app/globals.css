@@ -52,3 +52,36 @@
 .react-datepicker-wrapper {
   width: 100% !important;
 }
+
+/* --- Premium Dropdown Styling for DatePicker --- */
+.react-datepicker__month-read-view--down-arrow,
+.react-datepicker__year-read-view--down-arrow {
+  border-color: #004aad !important;
+}
+
+.react-datepicker__month-select,
+.react-datepicker__year-select {
+  @apply bg-slate-50 border-none rounded-lg px-2 py-1 font-bold text-slate-700 outline-none cursor-pointer hover:bg-slate-100 transition-colors;
+  font-family: inherit !important;
+}
+
+/* Customizing the header layout for better spacing */
+.react-datepicker__header__dropdown {
+  @apply flex justify-center gap-4 py-3 border-b border-slate-50;
+}
+
+.react-datepicker__month-dropdown-container,
+.react-datepicker__year-dropdown-container {
+  @apply inline-block mx-1;
+}
+
+/* Styling the month/year selection text */
+.react-datepicker__current-month {
+  @apply hidden; /* Hide the static month text since we use dropdowns */
+}
+
+/* Enhancing navigation arrows */
+.react-datepicker__navigation--previous,
+.react-datepicker__navigation--next {
+  @apply mt-2;
+}
