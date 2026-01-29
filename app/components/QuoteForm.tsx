@@ -83,7 +83,7 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                 : [...prev.destinations, country]
         }));
         setSearchTerm('');
-        // FIXED: Automatically close the country search list after selecting a country
+        // Close the country search list after selecting a country
         setShowCountryList(false);
     };
 
@@ -280,7 +280,13 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                             {/* Search Results Dropdown */}
                             <AnimatePresence>
                                 {showCountryList && (
-                                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="absolute z-[120] left-0 right-0 top-full mt-2 bg-white border border-slate-100 rounded-3xl shadow-2xl overflow-hidden max-h-[400px] flex flex-col">
+                                    <motion.div 
+                                        initial={{ opacity: 0, y: -20, scale: 0.95 }} 
+                                        animate={{ opacity: 1, y: 0, scale: 1 }} 
+                                        exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                                        transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                                        className="absolute z-[120] left-0 right-0 top-full mt-2 bg-white border border-slate-100 rounded-3xl shadow-2xl overflow-hidden max-h-[400px] flex flex-col"
+                                    >
                                         <div className="p-4 bg-slate-50 border-b border-slate-100">
                                             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Popular Destinations</p>
                                             <div className="flex flex-wrap gap-2">
