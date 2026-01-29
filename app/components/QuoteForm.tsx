@@ -85,6 +85,14 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
         setSearchTerm('');
     };
 
+    // Helper for Trip Duration Calculation
+    const calculateDuration = (start: Date | null, end: Date | null) => {
+        if (!start || !end) return 0;
+        const diffTime = Math.abs(end.getTime() - start.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        return diffDays;
+    };
+
     const validateForm = () => {
         const newErrors: Record<string, boolean> = {};
         if (!formData.name.trim()) newErrors.name = true;
@@ -316,6 +324,25 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                             </div>
                         </div>
                     </div>
+
+                    {/* TRIP DURATION DISPLAY */}
+                    {formData.start_date && formData.end_date && (
+                        <motion.div 
+                            initial={{ opacity: 0, scale: 0.95 }} 
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="bg-blue-50/50 border border-[#004aad]/20 rounded-2xl p-4 flex items-center justify-between"
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm">
+                                    <i className="fas fa-clock text-[#004aad] text-xs"></i>
+                                </div>
+                                <span className="text-sm font-black text-slate-700 uppercase tracking-tight">Trip duration</span>
+                            </div>
+                            <span className="text-lg font-black text-[#004aad]">
+                                {calculateDuration(formData.start_date, formData.end_date)} Days
+                            </span>
+                        </motion.div>
+                    )}
 
                     {/* Traveller DOB Section */}
                     <div className="bg-slate-50 p-6 rounded-[32px] border border-slate-100">
