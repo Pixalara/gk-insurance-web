@@ -312,14 +312,14 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                         <div className="space-y-2">
                             <label className="block text-xs font-black text-slate-500 uppercase tracking-widest">Departure date</label>
                             <div className="relative">
-                                <DatePicker selected={formData.start_date} onChange={(date) => setFormData({...formData, start_date: date})} selectsStart startDate={formData.start_date} endDate={formData.end_date} minDate={new Date()} placeholderText="Select departure" className={`w-full px-6 py-4 bg-slate-50 border-2 rounded-2xl font-bold text-sm ${errors.start_date ? 'border-red-500 bg-red-50' : 'border-slate-100'}`} />
+                                <DatePicker selected={formData.start_date} onChange={(date: Date | null) => setFormData({...formData, start_date: date})} selectsStart startDate={formData.start_date} endDate={formData.end_date} minDate={new Date()} placeholderText="Select departure" className={`w-full px-6 py-4 bg-slate-50 border-2 rounded-2xl font-bold text-sm ${errors.start_date ? 'border-red-500 bg-red-50' : 'border-slate-100'}`} />
                                 <i className="fas fa-plane-departure absolute right-6 top-1/2 -translate-y-1/2 text-[#004aad]"></i>
                             </div>
                         </div>
                         <div className="space-y-2">
                             <label className="block text-xs font-black text-slate-500 uppercase tracking-widest">Return date</label>
                             <div className="relative">
-                                <DatePicker selected={formData.end_date} onChange={(date) => setFormData({...formData, end_date: date})} selectsEnd startDate={formData.start_date} endDate={formData.end_date} minDate={formData.start_date || new Date()} placeholderText="Select return" className={`w-full px-6 py-4 bg-slate-50 border-2 rounded-2xl font-bold text-sm ${errors.end_date ? 'border-red-500 bg-red-50' : 'border-slate-100'}`} />
+                                <DatePicker selected={formData.end_date} onChange={(date: Date | null) => setFormData({...formData, end_date: date})} selectsEnd startDate={formData.start_date} endDate={formData.end_date} minDate={formData.start_date || new Date()} placeholderText="Select return" className={`w-full px-6 py-4 bg-slate-50 border-2 rounded-2xl font-bold text-sm ${errors.end_date ? 'border-red-500 bg-red-50' : 'border-slate-100'}`} />
                                 <i className="fas fa-plane-arrival absolute right-6 top-1/2 -translate-y-1/2 text-[#004aad]"></i>
                             </div>
                         </div>
@@ -353,7 +353,7 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                             <span className="font-bold text-slate-800 flex items-center gap-3"><i className="fas fa-user-circle text-slate-300"></i> Self</span>
                             <DatePicker
                                 selected={formData.dob}
-                                onChange={(date) => setFormData({...formData, dob: date})}
+                                onChange={(date: Date | null) => setFormData({ ...formData, dob: date })}
                                 dateFormat="dd/MM/yyyy"
                                 placeholderText="DD/MM/YYYY"
                                 showYearDropdown
