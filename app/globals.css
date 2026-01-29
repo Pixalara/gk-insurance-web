@@ -23,13 +23,17 @@
   border-top-left-radius: 1.5rem !important;
   border-top-right-radius: 1.5rem !important;
   padding-top: 12px !important;
+  display: block !important; /* Ensure header is visible */
 }
 
+/* Restored Month Styling */
 .react-datepicker__current-month {
+  display: block !important; /* Fixed: Changed from hidden to block */
   font-weight: 800 !important;
   text-transform: uppercase !important;
   letter-spacing: 0.05em !important;
   color: #0f172a !important;
+  padding: 10px 0 !important;
 }
 
 .react-datepicker__day--selected, 
@@ -46,6 +50,12 @@
 
 .react-datepicker__navigation {
   top: 15px !important;
+}
+
+/* Styled Navigation Arrows */
+.react-datepicker__navigation-icon::before {
+  border-color: #004aad !important;
+  border-width: 2px 2px 0 0 !important;
 }
 
 /* Ensure the input takes full width of the form container */
@@ -75,17 +85,11 @@
   @apply inline-block mx-1;
 }
 
-/* Styling the month/year selection text */
-.react-datepicker__current-month {
-  @apply hidden; /* Hide the static month text since we use dropdowns */
-}
-
 /* Enhancing navigation arrows */
 .react-datepicker__navigation--previous,
 .react-datepicker__navigation--next {
   @apply mt-2;
 }
-
 
 /* Styling for Travel Trip Calendar */
 .react-datepicker__month-container {
