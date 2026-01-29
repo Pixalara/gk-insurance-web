@@ -156,8 +156,7 @@ export default function HomePage() {
                     <img 
                       src={partner.logo} 
                       alt={partner.name} 
-                      className="h-10 md:h-12 w-auto object-contain transition-all grayscale opacity-60 hover:grayscale-0 hover:opacity-100 duration-500" 
-                    />
+                      className="h-10 md:h-12 w-auto object-contain transition-all duration-500"/>
                   </div>
                 )
               )}
