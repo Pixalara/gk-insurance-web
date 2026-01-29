@@ -10,7 +10,8 @@ type WhatsAppButtonProps = {
 
 export default function WhatsAppButton({
   phone = "919052433444",
-  message = "Hello GK Insurance Team, I’m interested in getting a quotation for insurance coverage. Kindly guide me on the next steps.",
+  // UPDATED MESSAGE BELOW
+  message = "Hello GK Insurance Team, I’m looking to get a quotation for insurance coverage. Please let me know the required details to proceed.",
   position = "bottom-right",
 }: WhatsAppButtonProps) {
 
