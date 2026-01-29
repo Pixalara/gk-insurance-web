@@ -23,14 +23,13 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
         email: '',
         insurance_type: productType || '',
         vehicle_number: '',
-        dob: null as Date | null, // Date object for React DatePicker
+        dob: null as Date | null,
         message: '',
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [errors, setErrors] = useState<Record<string, boolean>>({});
 
-    // Custom Dropdown State
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -45,7 +44,6 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
         'Life Insurance',
     ];
 
-    // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -62,11 +60,18 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
         if (!formData.phone.trim()) newErrors.phone = true;
         if (!formData.insurance_type) newErrors.insurance_type = true;
 
-        // Validation for DOB on specific products
-        if ((formData.insurance_type === 'Travel Insurance' || 
-             formData.insurance_type === 'Health Insurance' || 
-             formData.insurance_type === 'Life Insurance') && !formData.dob) {
+        // DOB Validation for specific products
+        if (['Travel Insurance', 'Health Insurance', 'Life Insurance'].includes(formData.insurance_type) && !formData.dob) {
             newErrors.dob = true;
+        }
+
+        // NEW: Mandatory Vehicle Number validation for Motor products
+        const isMotorProduct = formData.insurance_type.includes('Vehicle') || 
+                               formData.insurance_type.includes('Wheeler') || 
+                               formData.insurance_type.includes('Car');
+        
+        if (isMotorProduct && !formData.vehicle_number.trim()) {
+            newErrors.vehicle_number = true;
         }
 
         setErrors(newErrors);
@@ -84,7 +89,6 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
         setIsSubmitting(true);
 
         try {
-            // Format date for consistent storage and email
             const formattedDate = formData.dob ? formData.dob.toLocaleDateString('en-GB') : '';
 
             const leadPayload = {
@@ -101,7 +105,6 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
 
             saveLead(leadPayload as any);
 
-            // Updated server action call
             await sendQuoteEmail({
                 name: formData.name,
                 phone: formData.phone,
@@ -202,7 +205,7 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                 </div>
             </div>
 
-            {/* Premium Calendar Component */}
+            {/* Premium Calendar Component with Insurance Constraints */}
             {(formData.insurance_type === 'Travel Insurance' || formData.insurance_type === 'Health Insurance' || formData.insurance_type === 'Life Insurance') && (
                 <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
                     <label className="block text-xs font-black text-slate-500 uppercase tracking-widest">Date of Birth <span className="text-red-500">*</span></label>
@@ -218,18 +221,31 @@ export default function QuoteForm({ productType, onClose }: QuoteFormProps) {
                             showMonthDropdown
                             showYearDropdown
                             dropdownMode="select"
-                            maxDate={new Date()} // Prevents future date selection
-                            className={`w-full px-6 py-4 bg-slate-50 border-2 rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#004aad]/5 focus:bg-white transition-all font-semibold ${errors.dob ? 'border-red-500 bg-red-50' : 'border-slate-100'}`}
+                            minDate={new Date(1940, 0, 1)}
+                            maxDate={new Date()}
+                            yearDropdownItemNumber={86}
+                            scrollableYearDropdown={true}
+                            className={`w-full px-6 py-4 bg-slate-50 border-2 rounded-2xl focus:outline-none focus:ring-4 focus:ring-[#004aad]/5 focus:bg-white transition-all font-semibold ${errors.dob ? 'border-red-500 bg-red-50 shadow-sm' : 'border-slate-100'}`}
                         />
                         <i className="fas fa-calendar-alt absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"></i>
                     </div>
                 </div>
             )}
 
+            {/* Mandatory Vehicle Registration for Motor Products */}
             {(formData.insurance_type.includes('Vehicle') || formData.insurance_type.includes('Wheeler') || formData.insurance_type.includes('Car')) && (
                 <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
-                    <label className="block text-xs font-black text-slate-500 uppercase tracking-widest">Vehicle Registration Number</label>
-                    <input type="text" value={formData.vehicle_number} onChange={(e) => setFormData({ ...formData, vehicle_number: e.target.value })} className="w-full px-6 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:ring-4 focus:ring-[#004aad]/5 focus:bg-white transition-all font-semibold" placeholder="AP 01 AB 1234" />
+                    <label className="block text-xs font-black text-slate-500 uppercase tracking-widest">Vehicle Registration Number <span className="text-red-500">*</span></label>
+                    <input 
+                        type="text" 
+                        value={formData.vehicle_number} 
+                        onChange={(e) => {
+                            setFormData({ ...formData, vehicle_number: e.target.value });
+                            if (errors.vehicle_number) setErrors({ ...errors, vehicle_number: false });
+                        }} 
+                        className={`w-full px-6 py-4 bg-slate-50 border-2 rounded-2xl focus:ring-4 focus:ring-[#004aad]/5 focus:bg-white transition-all font-semibold ${errors.vehicle_number ? 'border-red-500 bg-red-50 shadow-sm' : 'border-slate-100'}`}
+                        placeholder="AP 01 AB 1234" 
+                    />
                 </div>
             )}
 
